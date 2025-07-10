@@ -121,12 +121,6 @@ class HomeScreen extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     );
                   }
-                  // Debug: Print subjects length and first subject if available
-                  print('Subjects count: \'${provider.subjects.length}\'');
-                  if (provider.subjects.isNotEmpty) {
-                    final s = provider.subjects[0];
-                    print('First subject: Name: \'${s.name}\', Code: \'${s.code}\', Attended: \'${s.attendedClasses}\', Total: \'${s.totalClasses}\', Percentage: \'${s.attendancePercentage}\'');
-                  }
                   if (provider.error != null) {
                     return Center(
                       child: Text(
