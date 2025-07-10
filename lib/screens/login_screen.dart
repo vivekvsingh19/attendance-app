@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/attendance_provider.dart';
 import '../utils/colors.dart';
+import '../services/secure_storage_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +16,12 @@ class _LoginScreenState extends State<LoginScreen> {
   final _collegeIdController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Do not pre-fill credentials for security/privacy
+  }
 
   @override
   void dispose() {
@@ -34,68 +41,68 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const SizedBox(height: 40),
               
-              // Logo and Header
-              Container(
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.shadowMedium,
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: 
-                         Image.asset(
-                          'assets/images/75+.png',
-                          width: 60,
-                          height: 60,
-                          fit: BoxFit.contain,
-                        ),
+              // // Logo and Header
+              // Container(
+              //   padding: const EdgeInsets.all(32),
+              //   decoration: BoxDecoration(
+              //     color: AppColors.surface,
+              //     borderRadius: BorderRadius.circular(24),
+              //     boxShadow: [
+              //       BoxShadow(
+              //         color: AppColors.shadowMedium,
+              //         blurRadius: 20,
+              //         offset: const Offset(0, 8),
+              //       ),
+              //     ],
+              //   ),
+              //   child: Column(
+              //     children: [
+              //       Container(
+              //         padding: const EdgeInsets.all(20),
+              //         decoration: BoxDecoration(
+              //           gradient: AppColors.primaryGradient,
+              //           borderRadius: BorderRadius.circular(20),
+              //           boxShadow: [
+              //             BoxShadow(
+              //               color: AppColors.primary.withOpacity(0.3),
+              //               blurRadius: 15,
+              //               offset: const Offset(0, 8),
+              //             ),
+              //           ],
+              //         ),
+              //         child: 
+              //            Image.asset(
+              //             'assets/images/75+.png',
+              //             width: 60,
+              //             height: 60,
+              //             fit: BoxFit.contain,
+              //           ),
                       
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'BunkMeter',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Smart Attendance Tracking',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              //       ),
+              //       const SizedBox(height: 10),
+              //       const Text(
+              //         'BunkMeter',
+              //         style: TextStyle(
+              //           fontSize: 32,
+              //           fontWeight: FontWeight.w700,
+              //           color: AppColors.textPrimary,
+              //           letterSpacing: -0.5,
+              //         ),
+              //       ),
+              //       const SizedBox(height: 8),
+              //       const Text(
+              //         'Smart Attendance Tracking',
+              //         style: TextStyle(
+              //           fontSize: 16,
+              //           color: AppColors.textSecondary,
+              //           fontWeight: FontWeight.w500,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               
-              const SizedBox(height: 40),
+              // const SizedBox(height: 40),
               
               // Login Card
               Container(
@@ -469,10 +476,15 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final provider = context.read<AttendanceProvider>();
-    
+    final username = _collegeIdController.text.trim();
+    final password = _passwordController.text.trim();
+
+    // Save credentials securely
+    await SecureStorageService.saveCredentials(username, password);
+
     await provider.login(
-      _collegeIdController.text.trim(),
-      _passwordController.text.trim(),
+      username,
+      password,
     );
 
     if (provider.isLoggedIn && mounted) {

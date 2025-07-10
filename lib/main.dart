@@ -4,6 +4,7 @@ import 'providers/attendance_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_navigation_wrapper.dart';
 import 'screens/mark_attendance_screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => AttendanceProvider(),
       child: MaterialApp(
-        title: 'BunkMate - Class Attendance',
+        title: 'Upasthit',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
@@ -116,10 +117,11 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        initialRoute: '/login',
+        initialRoute: '/',
         routes: {
+          '/': (context) => const SplashScreen(),
           '/login': (context) => const LoginScreen(),
-          '/dashboard': (context) => const MainNavigationWrapper(), // Compatibility route
+          '/dashboard': (context) => const MainNavigationWrapper(),
           '/home': (context) => const MainNavigationWrapper(),
           '/mark-attendance': (context) => const MarkAttendanceScreen(),
         },

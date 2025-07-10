@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/attendance_provider.dart';
+import '../services/secure_storage_service.dart';
 import '../utils/colors.dart';
+import 'home_screen.dart';
+import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,16 +17,18 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeApp();
+    _attemptAutoLogin();
   }
 
-  Future<void> _initializeApp() async {
+  Future<void> _attemptAutoLogin() async {
     // Add a small delay for splash screen visibility
     await Future.delayed(const Duration(seconds: 2));
-    
-    if (mounted) {
-      // Always navigate to login screen
-      Navigator.pushReplacementNamed(context, '/login');
+    final provider = context.read<AttendanceProvider>();
+    final autoLoggedIn = await provider.checkAndAutoLogin();
+    if (autoLoggedIn) {
+      Navigator.of(context).pushReplacementNamed('/home');
+    } else {
+      Navigator.of(context).pushReplacementNamed('/login');
     }
   }
 
@@ -58,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
             
             // App Name
             const Text(
-              'BunkMate',
+              'Upasthit',
               style: TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.w700,

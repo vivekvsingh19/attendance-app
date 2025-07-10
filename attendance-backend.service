@@ -1,0 +1,13 @@
+[Unit]
+Description=FastAPI Attendance Backend
+After=network.target
+
+[Service]
+User=vivek-singh
+WorkingDirectory=/home/vivek-singh/classattendence
+ExecStart=/home/vivek-singh/classattendence/start_backend_production.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

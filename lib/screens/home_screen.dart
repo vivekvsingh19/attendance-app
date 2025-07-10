@@ -48,7 +48,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   const Text(
-                    'BunkMate',
+                    'Upasthit',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
@@ -119,6 +119,28 @@ class HomeScreen extends StatelessWidget {
                   if (provider.isLoading) {
                     return const Center(
                       child: CircularProgressIndicator(),
+                    );
+                  }
+                  // Debug: Print subjects length and first subject if available
+                  print('Subjects count: \'${provider.subjects.length}\'');
+                  if (provider.subjects.isNotEmpty) {
+                    final s = provider.subjects[0];
+                    print('First subject: Name: \'${s.name}\', Code: \'${s.code}\', Attended: \'${s.attendedClasses}\', Total: \'${s.totalClasses}\', Percentage: \'${s.attendancePercentage}\'');
+                  }
+                  if (provider.error != null) {
+                    return Center(
+                      child: Text(
+                        provider.error!,
+                        style: const TextStyle(color: Colors.red, fontSize: 16),
+                      ),
+                    );
+                  }
+                  if (provider.subjects.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No subjects found. Please refresh or check your data.',
+                        style: const TextStyle(color: Colors.orange, fontSize: 16),
+                      ),
                     );
                   }
 

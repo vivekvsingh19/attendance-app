@@ -16,18 +16,19 @@ class AttendanceService {
     try {
       // Get the working base URL
       final baseUrl = await _getWorkingBaseUrl();
-      
-      final response = await http.post(
-        Uri.parse('$baseUrl/login-and-fetch-attendance'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode({
-          'college_id': collegeId,
-          'password': password,
-        }),
-      ).timeout(const Duration(seconds: 30));
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/login-and-fetch-attendance'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: jsonEncode({
+              'college_id': collegeId,
+              'password': password,
+            }),
+          )
+          .timeout(const Duration(seconds: 10)); // Remove mock data on timeout
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
@@ -40,7 +41,7 @@ class AttendanceService {
       } else {
         return AttendanceResponse(
           success: false,
-          message: 'Server error: ${response.statusCode}. Please try again.',
+          message: 'Server error: {response.statusCode}. Please try again.',
         );
       }
     } on SocketException {
@@ -51,7 +52,7 @@ class AttendanceService {
     } on HttpException catch (e) {
       return AttendanceResponse(
         success: false,
-        message: 'HTTP error: ${e.message}',
+        message: 'HTTP error: {e.message}',
       );
     } on FormatException {
       return AttendanceResponse(
@@ -61,7 +62,7 @@ class AttendanceService {
     } catch (e) {
       return AttendanceResponse(
         success: false,
-        message: 'Unexpected error: ${e.toString()}',
+        message: 'Unexpected error: {e.toString()}',
       );
     }
   }
