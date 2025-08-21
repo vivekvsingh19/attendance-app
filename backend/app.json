@@ -1,0 +1,21 @@
+{
+  "name": "Attendance Scraper API",
+  "description": "A FastAPI backend for college attendance scraping",
+  "keywords": ["fastapi", "attendance", "scraper"],
+  "website": "https://github.com/vivekvsingh19/attendance-app",
+  "repository": "https://github.com/vivekvsingh19/attendance-app",
+  "success_url": "/health",
+  "env": {
+    "PYTHON_VERSION": {
+      "description": "Python version",
+      "value": "3.11.9"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "eco"
+    }
+  },
+  "stack": "heroku-22"
+}
