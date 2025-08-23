@@ -5,8 +5,43 @@ import '../models/attendance.dart';
 import '../models/subject.dart';
 import '../models/settings.dart';
 import '../services/attendance_service.dart';
+import 'dart:convert';
 
 class AttendanceProvider with ChangeNotifier {
+  // Public method to load offline attendance (for use in SplashScreen)
+  Future<void> loadOfflineAttendance() async {
+    await _loadOfflineAttendance();
+  }
+  // Save attendance data to SharedPreferences as JSON
+  Future<void> _saveAttendanceCache(List<AttendanceData> attendanceList) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonList = attendanceList.map((a) => a.toJson()).toList();
+      await prefs.setString(_attendanceCacheKey, jsonEncode(jsonList));
+    } catch (e) {
+      debugPrint('Error saving attendance cache: $e');
+    }
+  }
+
+  // Load attendance data from SharedPreferences and set state if available
+  Future<void> _loadOfflineAttendance() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = prefs.getString(_attendanceCacheKey);
+      if (jsonString != null && jsonString.isNotEmpty) {
+        final List<dynamic> jsonList = jsonDecode(jsonString);
+        final cached = jsonList.map((e) => AttendanceData.fromJson(e['subject'], Map<String, dynamic>.from(e))).toList();
+        if (cached.isNotEmpty) {
+          _attendanceList = cached;
+          _isLoggedIn = true;
+          _error = 'Loaded last saved data (offline mode)';
+          notifyListeners(); // Notify UI of the state change
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading attendance cache: $e');
+    }
+  }
   List<AttendanceData> _attendanceList = [];
   bool _isLoading = false;
   String? _error;
@@ -15,6 +50,7 @@ class AttendanceProvider with ChangeNotifier {
   String? _password; // Store password for refresh functionality
 
   // Additional properties for the new HomeScreen
+  static const String _targetAttendanceKey = 'target_attendance';
   AttendanceSettings _settings = const AttendanceSettings();
   String? _studentName;
   
@@ -24,6 +60,9 @@ class AttendanceProvider with ChangeNotifier {
       encryptedSharedPreferences: true,
     ),
   );
+
+  // Key for offline attendance cache
+  static const String _attendanceCacheKey = 'attendance_cache';
 
   List<AttendanceData> get attendanceList => _attendanceList;
   bool get isLoading => _isLoading;
@@ -104,10 +143,10 @@ class AttendanceProvider with ChangeNotifier {
         _isLoggedIn = true;
         _collegeId = collegeId;
         _password = password;
-        
         // Save login credentials securely
         await _saveLoginCredentials(collegeId, password);
-        
+        // Save attendance cache for offline use
+        await _saveAttendanceCache(_attendanceList);
         _error = null;
       } else {
         _error = response.message;
@@ -116,6 +155,8 @@ class AttendanceProvider with ChangeNotifier {
     } catch (e) {
       _error = 'An unexpected error occurred: ${e.toString()}';
       _isLoggedIn = false;
+      // Try to load offline attendance if available
+      await _loadOfflineAttendance();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -148,6 +189,8 @@ class AttendanceProvider with ChangeNotifier {
 
       if (response.success && response.data != null) {
         _attendanceList = response.data!.values.toList();
+        // Save attendance cache for offline use
+        await _saveAttendanceCache(_attendanceList);
         _error = null;
       } else {
         _error = response.message;
@@ -162,6 +205,8 @@ class AttendanceProvider with ChangeNotifier {
       }
     } catch (e) {
       _error = 'Failed to refresh attendance: ${e.toString()}';
+      // Try to load offline attendance if available
+      await _loadOfflineAttendance();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -184,7 +229,6 @@ class AttendanceProvider with ChangeNotifier {
       
       // Clear saved credentials
       await _clearLoginCredentials();
-      
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -233,7 +277,6 @@ class AttendanceProvider with ChangeNotifier {
     try {
       await _secureStorage.delete(key: 'collegeId');
       await _secureStorage.delete(key: 'password');
-      
       // Also clear shared preferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('isLoggedIn');
@@ -262,14 +305,12 @@ class AttendanceProvider with ChangeNotifier {
         collegeId: savedCredentials['collegeId']!,
         password: savedCredentials['password']!,
       );
-      
       if (response.success && response.data != null) {
         _attendanceList = response.data!.values.toList();
         _isLoggedIn = true;
         _collegeId = savedCredentials['collegeId'];
         _password = savedCredentials['password'];
         _error = null;
-        
         _isLoading = false;
         notifyListeners();
         return true;
@@ -284,6 +325,33 @@ class AttendanceProvider with ChangeNotifier {
       await _clearLoginCredentials();
       _isLoading = false;
       notifyListeners();
+      return false;
+    }
+  }
+
+  // Check if user has offline data and was previously logged in
+  Future<bool> checkOfflineDataAndLogin() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final wasLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+      
+      if (!wasLoggedIn) {
+        return false; // User was never logged in
+      }
+      
+      // Try to load offline attendance data
+      await _loadOfflineAttendance();
+      
+      // Check if we have valid attendance data
+      if (_attendanceList.isNotEmpty && _isLoggedIn) {
+        // Set basic user info from preferences if available
+        _collegeId = prefs.getString('collegeId');
+        return true;
+      } else {
+        return false; // No valid offline data
+      }
+    } catch (e) {
+      debugPrint('Error checking offline data: $e');
       return false;
     }
   }
@@ -307,10 +375,22 @@ class AttendanceProvider with ChangeNotifier {
     }
   }
 
-  // Method to update attendance threshold
-  void updateAttendanceThreshold(double threshold) {
-    _settings = _settings.copyWith(attendanceThreshold: threshold);
+  // Load settings from SharedPreferences
+  Future<void> loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    final target = prefs.getDouble(_targetAttendanceKey);
+    if (target != null) {
+      _settings = _settings.copyWith(attendanceThreshold: target);
+      notifyListeners();
+    }
+  }
+
+  // Update target attendance and persist
+  Future<void> updateAttendanceThreshold(double value) async {
+    _settings = _settings.copyWith(attendanceThreshold: value);
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_targetAttendanceKey, value);
   }
 
   // Method to update student name

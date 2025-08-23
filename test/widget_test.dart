@@ -6,7 +6,7 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:classattendence/main.dart';
+import 'package:upasthit/main.dart';
 
 void main() {
   testWidgets('App loads and shows login screen', (WidgetTester tester) async {

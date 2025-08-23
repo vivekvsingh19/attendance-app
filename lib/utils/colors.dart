@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Primary colors
-  static const Color primary = Color(0xFF667EEA);
-  static const Color secondary = Color(0xFF764BA2);
+  static const Color primary = Color(0xFF67C9F5);
+  static const Color secondary = Color(0xFF1B7EE6);
   static const Color background = Color(0xFFF8FAFC);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color cardBackground = Color(0xFFFFFFFF);
@@ -21,7 +21,7 @@ class AppColors {
   
   // Gradient colors
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
+    colors: [Color(0xFF67C9F5), Color(0xFF1B7EE6)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

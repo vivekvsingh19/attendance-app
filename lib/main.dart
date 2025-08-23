@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/attendance_provider.dart';
+import 'providers/announcement_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_navigation_wrapper.dart';
-import 'screens/mark_attendance_screen.dart';
+
 import 'screens/splash_screen.dart';
 
 void main() async {
@@ -16,18 +17,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AttendanceProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AttendanceProvider()),
+        ChangeNotifierProvider(create: (context) => AnnouncementProvider()),
+      ],
       child: MaterialApp(
         title: 'Upasthit',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF2E7D32), // Deep green
+            seedColor: const Color(0xFF67C9F5),
             brightness: Brightness.light,
-            primary: const Color(0xFF2E7D32),
-            secondary: const Color(0xFF1976D2),
+            primary: const Color(0xFF67C9F5),
+            secondary: const Color(0xFF1B7EE6),
             surface: const Color(0xFFF8F9FA),
             background: const Color(0xFFF5F7FA),
             onPrimary: Colors.white,
@@ -37,7 +41,7 @@ class MyApp extends StatelessWidget {
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2E7D32),
+              backgroundColor: const Color(0xFF1B7EE6),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               shape: RoundedRectangleBorder(
@@ -123,7 +127,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const LoginScreen(),
           '/dashboard': (context) => const MainNavigationWrapper(),
           '/home': (context) => const MainNavigationWrapper(),
-          '/mark-attendance': (context) => const MarkAttendanceScreen(),
+          
         },
       ),
     );

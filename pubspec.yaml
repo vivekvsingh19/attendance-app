@@ -1,4 +1,4 @@
-name: classattendence
+name: upasthit
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.2.0+3
 
 environment:
   sdk: ^3.7.2
@@ -42,6 +42,12 @@ dependencies:
   photo_view: ^0.14.0
   path_provider: ^2.1.1
   permission_handler: ^11.0.1
+  lottie: ^3.3.1
+  table_calendar: ^3.2.0
+  fl_chart: ^1.0.0
+  pdf: ^3.10.1
+  printing: ^5.11.0
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_test:

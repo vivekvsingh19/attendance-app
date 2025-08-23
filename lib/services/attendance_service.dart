@@ -4,10 +4,10 @@ import 'package:http/http.dart' as http;
 import '../models/attendance.dart';
 
 class AttendanceService {
-  // Base URL configuration - tries different localhost addresses
-  static const String _baseUrl = 'http://10.0.2.2:8001'; // Android emulator localhost
-  static const String _fallbackBaseUrl = 'http://localhost:8001'; // Regular localhost
-  static const String _networkBaseUrl = 'http://192.168.1.9:8001'; // Network IP
+  // Base URL configuration - tries Heroku cloud first, then fallbacks
+  static const String _baseUrl = 'https://attendance-backend-api-a50f28666a6d.herokuapp.com'; // Heroku deployment
+  static const String _fallbackBaseUrl = 'http://192.168.29.21:5000'; // Local network fallback
+  static const String _networkBaseUrl = 'http://10.0.2.2:5000'; // Android emulator fallback
   
   static Future<AttendanceResponse> loginAndFetchAttendance({
     required String collegeId,
@@ -28,7 +28,7 @@ class AttendanceService {
               'password': password,
             }),
           )
-          .timeout(const Duration(seconds: 10)); // Remove mock data on timeout
+          .timeout(const Duration(seconds: 15)); // Longer timeout for cloud service
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
@@ -81,33 +81,33 @@ class AttendanceService {
   }
 
   static Future<String> _getWorkingBaseUrl() async {
-    // Try Android emulator localhost first
+    // Try Heroku cloud deployment first
     try {
       final response = await http.get(
         Uri.parse('$_baseUrl/health'),
         headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 2));
+      ).timeout(const Duration(seconds: 8)); // Longer timeout for cloud service
       if (response.statusCode == 200) {
         return _baseUrl;
       }
     } catch (e) {
-      // Android emulator localhost failed, try regular localhost
+      // Heroku failed, try local network
     }
     
-    // Try regular localhost
+    // Try local network fallback
     try {
       final response = await http.get(
         Uri.parse('$_fallbackBaseUrl/health'),
         headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 2));
+      ).timeout(const Duration(seconds: 3));
       if (response.statusCode == 200) {
         return _fallbackBaseUrl;
       }
     } catch (e) {
-      // Regular localhost failed, try network IP
+      // Local network failed, try Android emulator
     }
     
-    // Try network IP
+    // Try Android emulator fallback
     try {
       final response = await http.get(
         Uri.parse('$_networkBaseUrl/health'),
@@ -120,7 +120,7 @@ class AttendanceService {
       // All failed
     }
     
-    // Return default if all fail
+    // Return Heroku URL as default since it's most likely to work
     return _baseUrl;
   }
 }

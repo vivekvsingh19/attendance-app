@@ -2,26 +2,57 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/attendance_provider.dart';
 import '../utils/colors.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+
 
 class SettingsScreen extends StatelessWidget {
+  void _showLogoutDialog(BuildContext context, AttendanceProvider provider) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              provider.logout();
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+  }
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: const Text(
           'Settings',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: Color(0xFF1B7EE6),
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
+        iconTheme: const IconThemeData(color: Color(0xFF1B7EE6)),
       ),
       body: Consumer<AttendanceProvider>(
         builder: (context, provider, child) {
@@ -33,7 +64,6 @@ class SettingsScreen extends StatelessWidget {
                 // Profile Section
                 _buildProfileSection(provider, context),
                 const SizedBox(height: 24),
-                
                 // Attendance Settings
                 _buildSettingsSection(
                   'Attendance Settings',
@@ -58,34 +88,35 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 24),
-                
-                
                 // App Settings
                 _buildSettingsSection(
-                  'App',
+                  'App Settings',
                   Icons.settings_rounded,
                   [
                     _buildSettingTile(
-                      'Refresh Data',
-                      'Sync with server',
-                      Icons.refresh_rounded,
-                      AppColors.success,
-                      () => _refreshData(context, provider),
-                    ),
-                    _buildSettingTile(
-                      'About',
-                      'Version 1.0.0',
-                      Icons.info_outline_rounded,
-                      AppColors.textSecondary,
-                      () => _showAboutDialog(context),
+                      'Export Attendance as PDF',
+                      'Download all attendance data',
+                      Icons.picture_as_pdf_rounded,
+                      AppColors.primary,
+                      () => _showExportPdfDialog(context, provider),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
-                
+                const SizedBox(height: 16),
                 // Logout Button
                 _buildLogoutButton(context, provider),
                 const SizedBox(height: 40),
+                Center(
+                  child: Text(
+                    'Design & Made by Vivek Singh',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color.fromARGB(255, 230, 27, 27),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
               ],
             ),
           );
@@ -102,7 +133,7 @@ class SettingsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowLight,
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -112,9 +143,13 @@ class SettingsScreen extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: BorderRadius.circular(16),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF67C9F5), Color(0xFF1B7EE6)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
             child: const Icon(
               Icons.person_rounded,
@@ -128,37 +163,23 @@ class SettingsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  provider.studentName?.isNotEmpty == true 
-                      ? provider.studentName! 
-                      : 'Student',
+                  provider.studentName != null && provider.studentName!.isNotEmpty
+                      ? provider.studentName!
+                      : 'Student Name',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: Color(0xFF1E293B),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'ID: ${provider.settings.studentId.isNotEmpty ? provider.settings.studentId : 'Not Set'}',
+                  provider.settings.studentId.isNotEmpty
+                      ? 'ID: ${provider.settings.studentId}'
+                      : 'ID not set',
                   style: const TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.success.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    '${provider.overallAttendancePercentage.toStringAsFixed(1)}% Attendance',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.success,
-                    ),
+                    color: Color(0xFF64748B),
                   ),
                 ),
               ],
@@ -445,62 +466,202 @@ class SettingsScreen extends StatelessWidget {
     provider.toggleReminders();
   }
 
-  void _refreshData(BuildContext context, AttendanceProvider provider) async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Refreshing attendance data...')),
-    );
-    await provider.refreshAttendance();
-  }
-
-  void _showAboutDialog(BuildContext context) {
+  void _showExportPdfDialog(BuildContext context, AttendanceProvider provider) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('About BunkMate'),
-        content: const Text(
-          'BunkMate v1.0.0\n\n'
-          'A modern attendance tracking app for students.\n\n'
-          'Features:\n'
-          '• Real-time attendance tracking\n'
-          '• Smart bunk calculator\n'
-          '• Beautiful modern UI\n'
-          '• Customizable targets\n\n'
-          'Made with ❤️ for students',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context, AttendanceProvider provider) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        title: const Text('Export Attendance'),
+        content: const Text('Export all your attendance data as a PDF file.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              provider.logout();
-              Navigator.pushReplacementNamed(context, '/login');
+              await _exportAttendanceAsPdf(context, provider);
             },
-            child: const Text('Logout'),
+            child: const Text('Export'),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _exportAttendanceAsPdf(BuildContext context, AttendanceProvider provider) async {
+    final pdf = pw.Document();
+
+    final studentName = provider.studentName ?? 'Student';
+    final studentId = provider.settings.studentId.isNotEmpty ? provider.settings.studentId : 'Not Set';
+    final overallAttendance = provider.overallAttendancePercentage.toStringAsFixed(1);
+
+    pdf.addPage(
+      pw.Page(
+        pageTheme: pw.PageTheme(
+          margin: const pw.EdgeInsets.all(0),
+          buildBackground: (context) => pw.Container(
+            color: PdfColors.grey100,
+          ),
+        ),
+        build: (pw.Context context) {
+          List<pw.TableRow> tableRows = [
+            pw.TableRow(children: [
+              pw.Container(
+                alignment: pw.Alignment.center,
+                padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                child: pw.Text('Subject', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.blue)),
+              ),
+              pw.Container(
+                alignment: pw.Alignment.center,
+                padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                child: pw.Text('Attended', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.blue)),
+              ),
+              pw.Container(
+                alignment: pw.Alignment.center,
+                padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                child: pw.Text('Total', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.blue)),
+              ),
+              pw.Container(
+                alignment: pw.Alignment.center,
+                padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                child: pw.Text('Percentage', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.blue)),
+              ),
+              pw.Container(
+                alignment: pw.Alignment.center,
+                padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                child: pw.Text('Classification', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.blue)),
+              ),
+            ]),
+          ];
+          if (provider.attendanceList.isNotEmpty) {
+            tableRows.addAll(provider.attendanceList.map((detail) {
+              final percent = detail.total > 0 ? (detail.attended / detail.total * 100) : 0.0;
+              String classification;
+              PdfColor rowColor;
+              if (percent >= provider.settings.attendanceThreshold) {
+                classification = 'Good';
+                rowColor = PdfColors.green;
+              } else if (percent >= provider.settings.attendanceThreshold - 10) {
+                classification = 'Average';
+                rowColor = PdfColors.amber;
+              } else {
+                classification = 'Critical';
+                rowColor = PdfColors.red;
+              }
+              return pw.TableRow(children: [
+                pw.Container(
+                  alignment: pw.Alignment.center,
+                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                  child: pw.Text(detail.subject, style: pw.TextStyle(fontSize: 14, color: rowColor)),
+                ),
+                pw.Container(
+                  alignment: pw.Alignment.center,
+                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                  child: pw.Text(detail.attended.toString(), style: pw.TextStyle(fontSize: 14, color: rowColor)),
+                ),
+                pw.Container(
+                  alignment: pw.Alignment.center,
+                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                  child: pw.Text(detail.total.toString(), style: pw.TextStyle(fontSize: 14, color: rowColor)),
+                ),
+                pw.Container(
+                  alignment: pw.Alignment.center,
+                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                  child: pw.Text('${percent.toStringAsFixed(1)}%', style: pw.TextStyle(fontSize: 14, color: rowColor)),
+                ),
+                pw.Container(
+                  alignment: pw.Alignment.center,
+                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                  child: pw.Text(classification, style: pw.TextStyle(fontSize: 14, color: rowColor, fontWeight: pw.FontWeight.bold)),
+                ),
+              ]);
+            }));
+          } else {
+            tableRows.add(
+              pw.TableRow(children: [
+                pw.Container(
+                  alignment: pw.Alignment.center,
+                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                  child: pw.Text('No detailed attendance data available.', style: pw.TextStyle(fontSize: 14, color: PdfColors.red)),
+                ),
+                pw.Container(alignment: pw.Alignment.center, padding: const pw.EdgeInsets.symmetric(vertical: 4), child: pw.Text('')), 
+                pw.Container(alignment: pw.Alignment.center, padding: const pw.EdgeInsets.symmetric(vertical: 4), child: pw.Text('')), 
+                pw.Container(alignment: pw.Alignment.center, padding: const pw.EdgeInsets.symmetric(vertical: 4), child: pw.Text('')), 
+                pw.Container(alignment: pw.Alignment.center, padding: const pw.EdgeInsets.symmetric(vertical: 4), child: pw.Text('')),
+              ]),
+            );
+          }
+          return pw.Stack(
+            children: [
+              pw.Positioned.fill(
+                child: pw.Center(
+                  child: pw.Transform.rotate(
+                    angle: 0.5,
+                    child: pw.Opacity(
+                      opacity: 0.09,
+                      child: pw.Text(
+                        'Upasthit',
+                        textAlign: pw.TextAlign.center,
+                        style: pw.TextStyle(
+                          fontSize: 120,
+                          fontWeight: pw.FontWeight.bold,
+                          color: PdfColors.blue,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              pw.Center(
+                child: pw.Container(
+                  margin: const pw.EdgeInsets.symmetric(vertical: 40, horizontal: 32),
+                  padding: const pw.EdgeInsets.all(32),
+                  decoration: pw.BoxDecoration(
+                    color: PdfColors.white,
+                    borderRadius: const pw.BorderRadius.all(pw.Radius.circular(32)),
+                    boxShadow: [
+                      pw.BoxShadow(
+                        color: PdfColors.grey300,
+                        blurRadius: 24,
+                      ),
+                    ],
+                  ),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text('Attendance Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, color: PdfColors.blue800)),
+                      pw.SizedBox(height: 16),
+                      pw.Text('Name: $studentName', style: pw.TextStyle(fontSize: 16, color: PdfColors.black)),
+                      pw.Text('Student ID: $studentId', style: pw.TextStyle(fontSize: 16, color: PdfColors.black)),
+                      pw.Text('Overall Attendance: $overallAttendance%', style: pw.TextStyle(fontSize: 16, color: PdfColors.green800)),
+                      pw.SizedBox(height: 16),
+                      pw.Text('Detailed Attendance:', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColors.blue)),
+                      pw.SizedBox(height: 8),
+                      pw.Table(
+                        border: pw.TableBorder.all(),
+                        defaultVerticalAlignment: pw.TableCellVerticalAlignment.middle,
+                        children: tableRows,
+                      ),
+                      pw.SizedBox(height: 32),
+                      pw.Center(
+                        child: pw.Text(
+                          'Download Upasthit App from Play Store',
+                          style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold, color: PdfColors.blue800),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    // Share the PDF using Printing.sharePdf
+    final pdfBytes = await pdf.save();
+    await Printing.sharePdf(bytes: pdfBytes, filename: 'attendance_report.pdf');
   }
 }

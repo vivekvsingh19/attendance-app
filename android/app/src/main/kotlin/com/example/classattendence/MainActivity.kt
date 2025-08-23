@@ -1,4 +1,4 @@
-package com.example.classattendence
+package com.upasthit.app
 
 import io.flutter.embedding.android.FlutterActivity
 

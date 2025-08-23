@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 User=vivek-singh
-WorkingDirectory=/home/vivek-singh/classattendence
-ExecStart=/home/vivek-singh/classattendence/start_backend_production.sh
+WorkingDirectory=/home/vivek-singh/upasthit
+ExecStart=/home/vivek-singh/upasthit/start_backend_production.sh
 Restart=always
 RestartSec=5
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'settings_screen.dart';
 import 'timetable_screen.dart';
+import 'bunk_calendar_screen.dart';
 
 class MainNavigationWrapper extends StatefulWidget {
   const MainNavigationWrapper({super.key});
@@ -16,6 +17,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const TimetableScreen(),
+    const BunkCalendarScreen(),
     const SettingsScreen(),
   ];
 
@@ -27,16 +29,16 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
         children: _screens,
       ),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 20,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
+        // decoration: BoxDecoration(
+        //   color: Colors.white,
+        //   boxShadow: [
+        //     BoxShadow(
+        //      // color: const Color(0xFF1B7EE6).withOpacity(0.10),
+        //       //blurRadius: 20,
+        //       //offset: const Offset(0, -4),
+        //     ),
+        //   ],
+        // ),
         child: SafeArea(
           child: Container(
             height: 80,
@@ -55,9 +57,14 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                   index: 1,
                 ),
                 _buildNavItem(
+                  icon: Icons.event_busy_rounded,
+                  label: 'Bunks',
+                  index: 2,
+                ),
+                _buildNavItem(
                   icon: Icons.settings_rounded,
                   label: 'Settings',
-                  index: 2,
+                  index: 3,
                 ),
               ],
             ),
@@ -86,7 +93,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
         decoration: BoxDecoration(
           gradient: isSelected
               ? const LinearGradient(
-                  colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
+                  colors: [Color(0xFF67C9F5), Color(0xFF1B7EE6)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 )
@@ -95,7 +102,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF667EEA).withOpacity(0.3),
+                    color: const Color(0xFF1B7EE6).withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -107,7 +114,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
           children: [
             Icon(
               icon,
-              color: isSelected ? Colors.white : const Color(0xFF64748B),
+              color: isSelected ? Colors.white : const Color(0xFF1B7EE6),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -116,7 +123,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? Colors.white : const Color(0xFF64748B),
+                color: isSelected ? Colors.white : const Color(0xFF1B7EE6),
               ),
             ),
           ],

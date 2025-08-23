@@ -16,18 +16,23 @@ class _LoginScreenState extends State<LoginScreen> {
   final _collegeIdController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  String _selectedCollege = 'lnct';
 
   @override
   void initState() {
     super.initState();
-    // Do not pre-fill credentials for security/privacy
+    _loadSavedCredentials();
   }
 
-  @override
-  void dispose() {
-    _collegeIdController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  Future<void> _loadSavedCredentials() async {
+    final creds = await SecureStorageService.getCredentials();
+    if (creds['username'] != null && creds['username']!.isNotEmpty) {
+      _collegeIdController.text = creds['username']!;
+    }
+    if (creds['password'] != null && creds['password']!.isNotEmpty) {
+      _passwordController.text = creds['password']!;
+    }
+    setState(() {});
   }
 
   @override
@@ -39,59 +44,8 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.all(24.0),
           child: Column(
             children: [
-              const SizedBox(height: 40),
-              
-              // // Logo and Header
-              // Container(
-              //   padding: const EdgeInsets.all(32),
-              //   decoration: BoxDecoration(
-              //     color: AppColors.surface,
-              //     borderRadius: BorderRadius.circular(24),
-              //     boxShadow: [
-              //       BoxShadow(
-              //         color: AppColors.shadowMedium,
-              //         blurRadius: 20,
-              //         offset: const Offset(0, 8),
-              //       ),
-              //     ],
-              //   ),
-              //   child: Column(
-              //     children: [
-              //       Container(
-              //         padding: const EdgeInsets.all(20),
-              //         decoration: BoxDecoration(
-              //           gradient: AppColors.primaryGradient,
-              //           borderRadius: BorderRadius.circular(20),
-              //           boxShadow: [
-              //             BoxShadow(
-              //               color: AppColors.primary.withOpacity(0.3),
-              //               blurRadius: 15,
-              //               offset: const Offset(0, 8),
-              //             ),
-              //           ],
-              //         ),
-              //         child: 
-              //            Image.asset(
-              //             'assets/images/75+.png',
-              //             width: 60,
-              //             height: 60,
-              //             fit: BoxFit.contain,
-              //           ),
-                      
-              //       ),
-              //       const SizedBox(height: 10),
-              //       const Text(
-              //         'BunkMeter',
-              //         style: TextStyle(
-              //           fontSize: 32,
-              //           fontWeight: FontWeight.w700,
-              //           color: AppColors.textPrimary,
-              //           letterSpacing: -0.5,
-              //         ),
-              //       ),
-              //       const SizedBox(height: 8),
-              //       const Text(
-              //         'Smart Attendance Tracking',
+              const SizedBox(height: 36),
+              // Login Card
               //         style: TextStyle(
               //           fontSize: 16,
               //           color: AppColors.textSecondary,
@@ -105,15 +59,17 @@ class _LoginScreenState extends State<LoginScreen> {
               // const SizedBox(height: 40),
               
               // Login Card
-              Container(
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeOut,
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(28),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.shadowMedium,
-                      blurRadius: 20,
+                      color: AppColors.primary.withOpacity(0.08),
+                      blurRadius: 24,
                       offset: const Offset(0, 8),
                     ),
                   ],
@@ -143,6 +99,63 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 32),
                       
+                      // College Selection Dropdown
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'College',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            value: _selectedCollege,
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'lnct',
+                                child: Text('LNCT'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'lnctu',
+                                child: Text('LNCT University'),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedCollege = value!;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppColors.background,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: AppColors.borderLight),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: AppColors.borderLight),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: AppColors.error),
+                              ),
+                              hintStyle: const TextStyle(color: AppColors.textTertiary),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 24),
+
                       // College ID Field
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -479,13 +492,45 @@ class _LoginScreenState extends State<LoginScreen> {
     final username = _collegeIdController.text.trim();
     final password = _passwordController.text.trim();
 
-    // Save credentials securely
-    await SecureStorageService.saveCredentials(username, password);
-
     await provider.login(
       username,
       password,
     );
+
+    // Save credentials only if login is successful
+    if (provider.isLoggedIn) {
+      await SecureStorageService.saveCredentials(username, password);
+    }
+
+    // If login failed and no cached data, show special dialog
+    if (!provider.isLoggedIn && provider.attendanceList.isEmpty) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Server Unavailable'),
+            content: const Text(
+              'The server is currently unreachable and no previous data is available.\n\nPlease try again after some time or contact the developer if the issue persists.'
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
+
+    // If cached data is loaded (offline mode), just go to home
+    if (provider.isLoggedIn && provider.error != null && provider.error!.contains('last saved data')) {
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+      return;
+    }
 
     if (provider.isLoggedIn && mounted) {
       Navigator.of(context).pushReplacementNamed('/home');
