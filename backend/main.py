@@ -11,8 +11,14 @@ import re
 import json
 from typing import Dict, Any
 import uvicorn
+from sleep_middleware import sleep_mode_middleware
 
 app = FastAPI(title="College Attendance Scraper", version="1.0.0")
+
+# Add sleep mode middleware (if enabled)
+SLEEP_MODE_ENABLED = os.getenv('SLEEP_MODE_ENABLED', 'false').lower() == 'true'
+if SLEEP_MODE_ENABLED:
+    app.middleware("http")(sleep_mode_middleware)
 
 # Add CORS middleware to allow Flutter app to make requests
 app.add_middleware(
@@ -37,6 +43,29 @@ class AttendanceResponse(BaseModel):
     success: bool
     message: str
     data: Dict[str, Dict[str, Any]] = None
+
+@app.get("/")
+async def root():
+    """Root endpoint with basic info"""
+    return {"message": "College Attendance Scraper API", "status": "running"}
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    from sleep_middleware import is_service_active, get_current_ist_hour
+    from datetime import datetime
+    import pytz
+    
+    IST = pytz.timezone('Asia/Kolkata')
+    current_time = datetime.now(IST).strftime("%Y-%m-%d %I:%M %p")
+    
+    return {
+        "status": "healthy",
+        "service_active": is_service_active() if SLEEP_MODE_ENABLED else True,
+        "sleep_mode_enabled": SLEEP_MODE_ENABLED,
+        "current_time_ist": current_time,
+        "active_hours": ["7:00 AM - 12:00 PM", "4:00 PM - 7:00 PM"] if SLEEP_MODE_ENABLED else "24/7"
+    }
 
 @app.post("/login-and-fetch-attendance", response_model=AttendanceResponse)
 async def login_and_fetch_attendance(request: LoginRequest):

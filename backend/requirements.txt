@@ -7,3 +7,4 @@ python-multipart>=0.0.6
 lxml>=4.9.3
 gunicorn>=21.2.0
 certifi
+pytz>=2023.3
