@@ -1,0 +1,26 @@
+# Ignore Flutter/Dart files for Railway deployment
+android/
+ios/
+linux/
+macos/
+windows/
+web/
+lib/
+test/
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.yaml
+pubspec.lock
+analysis_options.yaml
+*.dart
+*.iml
+
+# Keep only backend and deployment files
+!backend/
+!railway.json
+!nixpacks.toml
+!Dockerfile
+!vercel.json
