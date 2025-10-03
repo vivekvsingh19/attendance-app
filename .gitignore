@@ -1,0 +1,105 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+attendance_env/
+
+# Logs
+*.log
+nohup.out
+
+# Build artifacts
+*.apk
+*.aab
+*.ipa
+
+# Security sensitive files
+*.jks
+*.keystore
+key.properties
+android/key.properties
+
+# IDE files
+*.iml
+*.ipr
+*.iws
+
+# Cache files
+*.cache
+*.dill
+*.track.dill
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Deployment and service files
+*.service
+deploy*.sh
+start*.sh
+monitor*.sh
+setup*.sh
+
+# Temporary and backup files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Environment and config files (if they contain secrets)
+.env
+.env.local
+.env.*.local
