@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:upasthit/screens/bunk_calendar_screen.dart';
 import 'home_screen.dart';
 import 'settings_screen.dart';
 import 'timetable_screen.dart';
@@ -19,6 +20,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
     const HomeScreen(),
     const TimetableScreen(),
     const DatewiseAttendanceScreen(),
+    const BunkCalendarScreen(),
     const SettingsScreen(),
   ];
 
@@ -73,9 +75,14 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                   index: 1,
                 ),
                 _buildNavItem(
+                  icon: Iconsax.clock_1,
+                  label: 'Bunks',
+                  index: 3,
+                ),
+                _buildNavItem(
                   icon: Iconsax.setting_24,
                   label: 'Settings',
-                  index: 3,
+                  index: 4,
                 ),
               ],
             ),

@@ -387,7 +387,7 @@ class _LoginScreenState extends State<LoginScreen>
         
         
         Text(
-          '© 2024 Upasthit',
+          '© Upasthit',
           style: TextStyle(
             color: Colors.white.withOpacity(0.6),
             fontSize: 12,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import '../providers/attendance_provider.dart';
 import '../models/datewise_attendance.dart';
@@ -12,7 +12,7 @@ class DatewiseAttendanceScreen extends StatefulWidget {
 }
 
 class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
-  bool _sortNewestFirst = true; // true = newest first, false = oldest first
+  bool _sortNewestFirst = true; // Default: newest first to show recent attendance
 
   // Parse date format like "25 Aug 2025" to DateTime
   DateTime _parseDate(String dateStr) {
@@ -73,16 +73,16 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
-        backgroundColor: const Color(0xFF10B981),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.blue),
         actions: [
           // Filter/Sort button
           IconButton(
-            icon: Icon(_sortNewestFirst ? Icons.sort : Icons.sort_by_alpha),
+            icon: Icon(_sortNewestFirst ? Iconsax.arrow_down_1 : Iconsax.arrow_up_2),
             tooltip: _sortNewestFirst ? 'Sort: Newest First' : 'Sort: Oldest First',
             onPressed: () {
               setState(() {
@@ -91,19 +91,7 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
             },
           ),
           // Debug button to manually fetch datewise attendance
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              final provider = context.read<AttendanceProvider>();
-              debugPrint('Manual refresh button pressed');
-              debugPrint('  - isLoggedIn: ${provider.isLoggedIn}');
-              debugPrint('  - collegeId: ${provider.collegeId}');
-              debugPrint('  - main attendance count: ${provider.subjects.length}');
-              debugPrint('  - datewise attendance count: ${provider.datewiseAttendance.length}');
-              debugPrint('  - datewise error: ${provider.datewiseError}');
-              provider.fetchDatewiseAttendance();
-            },
-          ),
+          
         ],
       ),
       body: Consumer<AttendanceProvider>(

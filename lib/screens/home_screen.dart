@@ -40,17 +40,18 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(10),
               child: Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Image.asset(
+                 // Container(
+                   // padding: const EdgeInsets.all(8),
+                   // decoration: BoxDecoration(
+                    //  borderRadius: BorderRadius.circular(12),
+                   // ),
+                     Image.asset(
                       'assets/images/75+.png',
                       width: 34,
                       height: 34,
+                      
                     ),
-                  ),
+                  //),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(

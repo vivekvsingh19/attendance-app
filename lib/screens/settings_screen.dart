@@ -47,7 +47,7 @@ class SettingsScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1B7EE6),
+            color: Color.fromARGB(255, 0, 0, 0),
           ),
         ),
         backgroundColor: Colors.transparent,

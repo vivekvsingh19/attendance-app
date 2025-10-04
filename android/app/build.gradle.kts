@@ -36,12 +36,19 @@ android {
                 keystorePropertiesFile.inputStream().use {
                     keystoreProperties.load(it)
                 }
-                storeFile = file(keystoreProperties["storeFile"] ?: "")
-                storePassword = keystoreProperties["storePassword"] as String?
-                keyAlias = keystoreProperties["keyAlias"] as String?
-                keyPassword = keystoreProperties["keyPassword"] as String?
+                val storeFileValue = keystoreProperties["storeFile"] as String?
+                if (storeFileValue != null && file(storeFileValue).exists()) {
+                    storeFile = file(storeFileValue)
+                    storePassword = keystoreProperties["storePassword"] as String?
+                    keyAlias = keystoreProperties["keyAlias"] as String?
+                    keyPassword = keystoreProperties["keyPassword"] as String?
+                } else {
+                    // Use debug signing if keystore file doesn't exist
+                    println("Warning: Keystore file not found. Using debug signing for release.")
+                }
             } else {
-                throw GradleException("key.properties file not found. Cannot build release.")
+                // Use debug signing if key.properties doesn't exist
+                println("Warning: key.properties file not found. Using debug signing for release.")
             }
         }
     }
@@ -51,7 +58,11 @@ android {
             // No need to manually configure signing for debug
         }
         release {
-            signingConfig = signingConfigs.getByName("release")
+            // Only use release signing config if properly configured
+            val releaseSigningConfig = signingConfigs.getByName("release")
+            if (releaseSigningConfig.storeFile?.exists() == true) {
+                signingConfig = releaseSigningConfig
+            }
             isMinifyEnabled = false
             isShrinkResources = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
