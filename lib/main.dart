@@ -43,8 +43,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: false);
         final announcementProvider = Provider.of<AnnouncementProvider>(context, listen: false);
         
-        // Only attempt refresh if user is logged in
-        if (attendanceProvider.isLoggedIn) {
+        // Only attempt refresh if user is logged in and has credentials
+        if (attendanceProvider.isLoggedIn && attendanceProvider.collegeId != null) {
+          // Use a more graceful refresh that won't clear credentials on network errors
           attendanceProvider.refreshAttendance();
         }
         announcementProvider.refreshIfNeeded();

@@ -389,17 +389,43 @@ class AttendanceProvider with ChangeNotifier {
         notifyListeners();
         return true;
       } else {
-        // Auto-login failed, clear saved credentials
+        // Auto-login failed - check if we have cached data before clearing credentials
+        await _loadOfflineAttendance();
+        if (_attendanceList.isNotEmpty && _isLoggedIn) {
+          // We have valid cached data, don't clear credentials
+          _collegeId = savedCredentials['collegeId'];
+          _password = savedCredentials['password'];
+          _error = 'Network unavailable - showing cached data';
+          _isLoading = false;
+          notifyListeners();
+          return true;
+        } else {
+          // No cached data available, clear credentials
+          await _clearLoginCredentials();
+          _isLoading = false;
+          notifyListeners();
+          return false;
+        }
+      }
+    } catch (e) {
+      debugPrint('Auto-login network error: $e');
+      // Network error - check if we have cached data before clearing credentials
+      await _loadOfflineAttendance();
+      if (_attendanceList.isNotEmpty && _isLoggedIn) {
+        // We have valid cached data, don't clear credentials
+        _collegeId = savedCredentials['collegeId'];
+        _password = savedCredentials['password'];
+        _error = 'Offline mode - showing cached data. Pull to refresh when connected.';
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        // No cached data available, clear credentials
         await _clearLoginCredentials();
         _isLoading = false;
         notifyListeners();
         return false;
       }
-    } catch (e) {
-      await _clearLoginCredentials();
-      _isLoading = false;
-      notifyListeners();
-      return false;
     }
   }
 
