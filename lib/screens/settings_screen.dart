@@ -7,7 +7,6 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-
 class SettingsScreen extends StatelessWidget {
   void _showLogoutDialog(BuildContext context, AttendanceProvider provider) {
     showDialog(
@@ -21,9 +20,7 @@ class SettingsScreen extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () {
               Navigator.pop(context);
               provider.logout();
@@ -35,6 +32,7 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
+
   const SettingsScreen({super.key});
 
   @override
@@ -54,7 +52,8 @@ class SettingsScreen extends StatelessWidget {
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Color(0xFF1B7EE6)),
-        automaticallyImplyLeading: false, // Remove back button since this is a tab
+        automaticallyImplyLeading:
+            false, // Remove back button since this is a tab
       ),
       body: Consumer<AttendanceProvider>(
         builder: (context, provider, child) {
@@ -80,9 +79,13 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     _buildSettingTile(
                       'Reminder Notifications',
-                      provider.settings.reminderEnabled ? 'Enabled' : 'Disabled',
+                      provider.settings.reminderEnabled
+                          ? 'Enabled'
+                          : 'Disabled',
                       Icons.notifications_rounded,
-                      provider.settings.reminderEnabled ? AppColors.success : AppColors.textSecondary,
+                      provider.settings.reminderEnabled
+                          ? AppColors.success
+                          : AppColors.textSecondary,
                       () => _toggleReminders(provider),
                       showSwitch: true,
                       switchValue: provider.settings.reminderEnabled,
@@ -91,26 +94,22 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 // App Settings
-                _buildSettingsSection(
-                  'App Settings',
-                  Icons.settings_rounded,
-                  [
-                    _buildSettingTile(
-                      'Export Attendance as PDF',
-                      'Download all attendance data',
-                      Icons.picture_as_pdf_rounded,
-                      AppColors.primary,
-                      () => _showExportPdfDialog(context, provider),
-                    ),
-                    _buildSettingTile(
-                      'Share Options',
-                      'Share app or attendance reports',
-                      Icons.mobile_friendly_rounded,
-                      const Color(0xFF10B981),
-                      () => ShareHelper.showShareOptions(context, provider),
-                    ),
-                  ],
-                ),
+                _buildSettingsSection('App Settings', Icons.settings_rounded, [
+                  _buildSettingTile(
+                    'Export Attendance as PDF',
+                    'Download all attendance data',
+                    Icons.picture_as_pdf_rounded,
+                    AppColors.primary,
+                    () => _showExportPdfDialog(context, provider),
+                  ),
+                  _buildSettingTile(
+                    'Share Options',
+                    'Share app or attendance reports',
+                    Icons.mobile_friendly_rounded,
+                    const Color(0xFF10B981),
+                    () => ShareHelper.showShareOptions(context, provider),
+                  ),
+                ]),
                 const SizedBox(height: 16),
                 // Logout Button
                 _buildLogoutButton(context, provider),
@@ -134,72 +133,76 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
- // Widget _buildProfileSection(AttendanceProvider provider, BuildContext context) {
-    // return Container(
-    //   padding: const EdgeInsets.all(24),
-    //   decoration: BoxDecoration(
-    //     color: Colors.white,
-    //     borderRadius: BorderRadius.circular(20),
-    //     boxShadow: [
-    //       BoxShadow(
-    //         color: Colors.black.withOpacity(0.04),
-    //         blurRadius: 20,
-    //         offset: const Offset(0, 4),
-    //       ),
-    //     ],
-    //   ),
-    //   child: Row(
-    //     children: [
-    //       Container(
-    //         padding: const EdgeInsets.all(16),
-    //         decoration: const BoxDecoration(
-    //           gradient: LinearGradient(
-    //             colors: [Color(0xFF67C9F5), Color(0xFF1B7EE6)],
-    //             begin: Alignment.topLeft,
-    //             end: Alignment.bottomRight,
-    //           ),
-    //           borderRadius: BorderRadius.all(Radius.circular(16)),
-    //         ),
-    //         child: const Icon(
-    //           Icons.person_rounded,
-    //           color: Colors.white,
-    //           size: 32,
-    //         ),
-    //       ),
-    //       const SizedBox(width: 16),
-    //       Expanded(
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: [
-    //             Text(
-    //               provider.studentName != null && provider.studentName!.isNotEmpty
-    //                   ? provider.studentName!
-    //                   : 'Student Name',
-    //               style: const TextStyle(
-    //                 fontSize: 18,
-    //                 fontWeight: FontWeight.w700,
-    //                 color: Color(0xFF1E293B),
-    //               ),
-    //             ),
-    //             const SizedBox(height: 4),
-    //             Text(
-    //               provider.settings.studentId.isNotEmpty
-    //                   ? 'ID: ${provider.settings.studentId}'
-    //                   : 'ID not set',
-    //               style: const TextStyle(
-    //                 fontSize: 14,
-    //                 color: Color(0xFF64748B),
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
+  // Widget _buildProfileSection(AttendanceProvider provider, BuildContext context) {
+  // return Container(
+  //   padding: const EdgeInsets.all(24),
+  //   decoration: BoxDecoration(
+  //     color: Colors.white,
+  //     borderRadius: BorderRadius.circular(20),
+  //     boxShadow: [
+  //       BoxShadow(
+  //         color: Colors.black.withOpacity(0.04),
+  //         blurRadius: 20,
+  //         offset: const Offset(0, 4),
+  //       ),
+  //     ],
+  //   ),
+  //   child: Row(
+  //     children: [
+  //       Container(
+  //         padding: const EdgeInsets.all(16),
+  //         decoration: const BoxDecoration(
+  //           gradient: LinearGradient(
+  //             colors: [Color(0xFF67C9F5), Color(0xFF1B7EE6)],
+  //             begin: Alignment.topLeft,
+  //             end: Alignment.bottomRight,
+  //           ),
+  //           borderRadius: BorderRadius.all(Radius.circular(16)),
+  //         ),
+  //         child: const Icon(
+  //           Icons.person_rounded,
+  //           color: Colors.white,
+  //           size: 32,
+  //         ),
+  //       ),
+  //       const SizedBox(width: 16),
+  //       Expanded(
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             Text(
+  //               provider.studentName != null && provider.studentName!.isNotEmpty
+  //                   ? provider.studentName!
+  //                   : 'Student Name',
+  //               style: const TextStyle(
+  //                 fontSize: 18,
+  //                 fontWeight: FontWeight.w700,
+  //                 color: Color(0xFF1E293B),
+  //               ),
+  //             ),
+  //             const SizedBox(height: 4),
+  //             Text(
+  //               provider.settings.studentId.isNotEmpty
+  //                   ? 'ID: ${provider.settings.studentId}'
+  //                   : 'ID not set',
+  //               style: const TextStyle(
+  //                 fontSize: 14,
+  //                 color: Color(0xFF64748B),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //   ),
+  // );
   //}
 
-  Widget _buildSettingsSection(String title, IconData icon, List<Widget> children) {
+  Widget _buildSettingsSection(
+    String title,
+    IconData icon,
+    List<Widget> children,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -211,11 +214,7 @@ class SettingsScreen extends StatelessWidget {
                 color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(
-                icon,
-                color: AppColors.primary,
-                size: 18,
-              ),
+              child: Icon(icon, color: AppColors.primary, size: 18),
             ),
             const SizedBox(width: 12),
             Text(
@@ -248,10 +247,10 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Widget _buildSettingTile(
-    String title, 
-    String subtitle, 
-    IconData icon, 
-    Color color, 
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color,
     VoidCallback onTap, {
     bool showSwitch = false,
     bool switchValue = false,
@@ -269,11 +268,7 @@ class SettingsScreen extends StatelessWidget {
                 color: color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 20,
-              ),
+              child: Icon(icon, color: color, size: 20),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -299,11 +294,11 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
             ),
-            if (showSwitch) 
+            if (showSwitch)
               Switch(
                 value: switchValue,
                 onChanged: (value) => onTap(),
-                activeColor: AppColors.success,
+                activeThumbColor: AppColors.success,
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               )
             else
@@ -420,9 +415,7 @@ class SettingsScreen extends StatelessWidget {
         title: const Text('Update Student ID'),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Student ID',
-          ),
+          decoration: const InputDecoration(labelText: 'Student ID'),
         ),
         actions: [
           TextButton(
@@ -441,7 +434,10 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showStudentNameDialog(BuildContext context, AttendanceProvider provider) {
+  void _showStudentNameDialog(
+    BuildContext context,
+    AttendanceProvider provider,
+  ) {
     final controller = TextEditingController(text: provider.studentName ?? '');
 
     showDialog(
@@ -450,9 +446,7 @@ class SettingsScreen extends StatelessWidget {
         title: const Text('Update Student Name'),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Student Name',
-          ),
+          decoration: const InputDecoration(labelText: 'Student Name'),
         ),
         actions: [
           TextButton(
@@ -498,107 +492,190 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _exportAttendanceAsPdf(BuildContext context, AttendanceProvider provider) async {
+  Future<void> _exportAttendanceAsPdf(
+    BuildContext context,
+    AttendanceProvider provider,
+  ) async {
     final pdf = pw.Document();
 
     final studentName = provider.studentName ?? 'Student';
-    final studentId = provider.settings.studentId.isNotEmpty ? provider.settings.studentId : 'Not Set';
-    final overallAttendance = provider.overallAttendancePercentage.toStringAsFixed(1);
+    final studentId = provider.settings.studentId.isNotEmpty
+        ? provider.settings.studentId
+        : 'Not Set';
+    final overallAttendance = provider.overallAttendancePercentage
+        .toStringAsFixed(1);
 
     pdf.addPage(
       pw.Page(
         pageTheme: pw.PageTheme(
           margin: const pw.EdgeInsets.all(0),
-          buildBackground: (context) => pw.Container(
-            color: PdfColors.grey100,
-          ),
+          buildBackground: (context) => pw.Container(color: PdfColors.grey100),
         ),
         build: (pw.Context context) {
           List<pw.TableRow> tableRows = [
-            pw.TableRow(children: [
-              pw.Container(
-                alignment: pw.Alignment.center,
-                padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                child: pw.Text('Subject', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.blue)),
-              ),
-              pw.Container(
-                alignment: pw.Alignment.center,
-                padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                child: pw.Text('Attended', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.blue)),
-              ),
-              pw.Container(
-                alignment: pw.Alignment.center,
-                padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                child: pw.Text('Total', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.blue)),
-              ),
-              pw.Container(
-                alignment: pw.Alignment.center,
-                padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                child: pw.Text('Percentage', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.blue)),
-              ),
-              pw.Container(
-                alignment: pw.Alignment.center,
-                padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                child: pw.Text('Classification', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.blue)),
-              ),
-            ]),
+            pw.TableRow(
+              children: [
+                pw.Container(
+                  alignment: pw.Alignment.center,
+                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                  child: pw.Text(
+                    'Subject',
+                    style: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfColors.blue,
+                    ),
+                  ),
+                ),
+                pw.Container(
+                  alignment: pw.Alignment.center,
+                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                  child: pw.Text(
+                    'Attended',
+                    style: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfColors.blue,
+                    ),
+                  ),
+                ),
+                pw.Container(
+                  alignment: pw.Alignment.center,
+                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                  child: pw.Text(
+                    'Total',
+                    style: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfColors.blue,
+                    ),
+                  ),
+                ),
+                pw.Container(
+                  alignment: pw.Alignment.center,
+                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                  child: pw.Text(
+                    'Percentage',
+                    style: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfColors.blue,
+                    ),
+                  ),
+                ),
+                pw.Container(
+                  alignment: pw.Alignment.center,
+                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                  child: pw.Text(
+                    'Classification',
+                    style: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfColors.blue,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ];
           if (provider.attendanceList.isNotEmpty) {
-            tableRows.addAll(provider.attendanceList.map((detail) {
-              final percent = detail.total > 0 ? (detail.attended / detail.total * 100) : 0.0;
-              String classification;
-              PdfColor rowColor;
-              if (percent >= provider.settings.attendanceThreshold) {
-                classification = 'Good';
-                rowColor = PdfColors.green;
-              } else if (percent >= provider.settings.attendanceThreshold - 10) {
-                classification = 'Average';
-                rowColor = PdfColors.amber;
-              } else {
-                classification = 'Critical';
-                rowColor = PdfColors.red;
-              }
-              return pw.TableRow(children: [
-                pw.Container(
-                  alignment: pw.Alignment.center,
-                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                  child: pw.Text(detail.subject, style: pw.TextStyle(fontSize: 14, color: rowColor)),
-                ),
-                pw.Container(
-                  alignment: pw.Alignment.center,
-                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                  child: pw.Text(detail.attended.toString(), style: pw.TextStyle(fontSize: 14, color: rowColor)),
-                ),
-                pw.Container(
-                  alignment: pw.Alignment.center,
-                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                  child: pw.Text(detail.total.toString(), style: pw.TextStyle(fontSize: 14, color: rowColor)),
-                ),
-                pw.Container(
-                  alignment: pw.Alignment.center,
-                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                  child: pw.Text('${percent.toStringAsFixed(1)}%', style: pw.TextStyle(fontSize: 14, color: rowColor)),
-                ),
-                pw.Container(
-                  alignment: pw.Alignment.center,
-                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                  child: pw.Text(classification, style: pw.TextStyle(fontSize: 14, color: rowColor, fontWeight: pw.FontWeight.bold)),
-                ),
-              ]);
-            }));
+            tableRows.addAll(
+              provider.attendanceList.map((detail) {
+                final percent = detail.total > 0
+                    ? (detail.attended / detail.total * 100)
+                    : 0.0;
+                String classification;
+                PdfColor rowColor;
+                if (percent >= provider.settings.attendanceThreshold) {
+                  classification = 'Good';
+                  rowColor = PdfColors.green;
+                } else if (percent >=
+                    provider.settings.attendanceThreshold - 10) {
+                  classification = 'Average';
+                  rowColor = PdfColors.amber;
+                } else {
+                  classification = 'Critical';
+                  rowColor = PdfColors.red;
+                }
+                return pw.TableRow(
+                  children: [
+                    pw.Container(
+                      alignment: pw.Alignment.center,
+                      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                      child: pw.Text(
+                        detail.subject,
+                        style: pw.TextStyle(fontSize: 14, color: rowColor),
+                      ),
+                    ),
+                    pw.Container(
+                      alignment: pw.Alignment.center,
+                      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                      child: pw.Text(
+                        detail.attended.toString(),
+                        style: pw.TextStyle(fontSize: 14, color: rowColor),
+                      ),
+                    ),
+                    pw.Container(
+                      alignment: pw.Alignment.center,
+                      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                      child: pw.Text(
+                        detail.total.toString(),
+                        style: pw.TextStyle(fontSize: 14, color: rowColor),
+                      ),
+                    ),
+                    pw.Container(
+                      alignment: pw.Alignment.center,
+                      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                      child: pw.Text(
+                        '${percent.toStringAsFixed(1)}%',
+                        style: pw.TextStyle(fontSize: 14, color: rowColor),
+                      ),
+                    ),
+                    pw.Container(
+                      alignment: pw.Alignment.center,
+                      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                      child: pw.Text(
+                        classification,
+                        style: pw.TextStyle(
+                          fontSize: 14,
+                          color: rowColor,
+                          fontWeight: pw.FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }),
+            );
           } else {
             tableRows.add(
-              pw.TableRow(children: [
-                pw.Container(
-                  alignment: pw.Alignment.center,
-                  padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                  child: pw.Text('No detailed attendance data available.', style: pw.TextStyle(fontSize: 14, color: PdfColors.red)),
-                ),
-                pw.Container(alignment: pw.Alignment.center, padding: const pw.EdgeInsets.symmetric(vertical: 4), child: pw.Text('')), 
-                pw.Container(alignment: pw.Alignment.center, padding: const pw.EdgeInsets.symmetric(vertical: 4), child: pw.Text('')), 
-                pw.Container(alignment: pw.Alignment.center, padding: const pw.EdgeInsets.symmetric(vertical: 4), child: pw.Text('')), 
-                pw.Container(alignment: pw.Alignment.center, padding: const pw.EdgeInsets.symmetric(vertical: 4), child: pw.Text('')),
-              ]),
+              pw.TableRow(
+                children: [
+                  pw.Container(
+                    alignment: pw.Alignment.center,
+                    padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                    child: pw.Text(
+                      'No detailed attendance data available.',
+                      style: pw.TextStyle(fontSize: 14, color: PdfColors.red),
+                    ),
+                  ),
+                  pw.Container(
+                    alignment: pw.Alignment.center,
+                    padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                    child: pw.Text(''),
+                  ),
+                  pw.Container(
+                    alignment: pw.Alignment.center,
+                    padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                    child: pw.Text(''),
+                  ),
+                  pw.Container(
+                    alignment: pw.Alignment.center,
+                    padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                    child: pw.Text(''),
+                  ),
+                  pw.Container(
+                    alignment: pw.Alignment.center,
+                    padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                    child: pw.Text(''),
+                  ),
+                ],
+              ),
             );
           }
           return pw.Stack(
@@ -624,39 +701,78 @@ class SettingsScreen extends StatelessWidget {
               ),
               pw.Center(
                 child: pw.Container(
-                  margin: const pw.EdgeInsets.symmetric(vertical: 40, horizontal: 32),
+                  margin: const pw.EdgeInsets.symmetric(
+                    vertical: 40,
+                    horizontal: 32,
+                  ),
                   padding: const pw.EdgeInsets.all(32),
                   decoration: pw.BoxDecoration(
                     color: PdfColors.white,
-                    borderRadius: const pw.BorderRadius.all(pw.Radius.circular(32)),
+                    borderRadius: const pw.BorderRadius.all(
+                      pw.Radius.circular(32),
+                    ),
                     boxShadow: [
-                      pw.BoxShadow(
-                        color: PdfColors.grey300,
-                        blurRadius: 24,
-                      ),
+                      pw.BoxShadow(color: PdfColors.grey300, blurRadius: 24),
                     ],
                   ),
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text('Attendance Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, color: PdfColors.blue800)),
+                      pw.Text(
+                        'Attendance Report',
+                        style: pw.TextStyle(
+                          fontSize: 24,
+                          fontWeight: pw.FontWeight.bold,
+                          color: PdfColors.blue800,
+                        ),
+                      ),
                       pw.SizedBox(height: 16),
-                      pw.Text('Name: $studentName', style: pw.TextStyle(fontSize: 16, color: PdfColors.black)),
-                      pw.Text('Student ID: $studentId', style: pw.TextStyle(fontSize: 16, color: PdfColors.black)),
-                      pw.Text('Overall Attendance: $overallAttendance%', style: pw.TextStyle(fontSize: 16, color: PdfColors.green800)),
+                      pw.Text(
+                        'Name: $studentName',
+                        style: pw.TextStyle(
+                          fontSize: 16,
+                          color: PdfColors.black,
+                        ),
+                      ),
+                      pw.Text(
+                        'Student ID: $studentId',
+                        style: pw.TextStyle(
+                          fontSize: 16,
+                          color: PdfColors.black,
+                        ),
+                      ),
+                      pw.Text(
+                        'Overall Attendance: $overallAttendance%',
+                        style: pw.TextStyle(
+                          fontSize: 16,
+                          color: PdfColors.green800,
+                        ),
+                      ),
                       pw.SizedBox(height: 16),
-                      pw.Text('Detailed Attendance:', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColors.blue)),
+                      pw.Text(
+                        'Detailed Attendance:',
+                        style: pw.TextStyle(
+                          fontSize: 18,
+                          fontWeight: pw.FontWeight.bold,
+                          color: PdfColors.blue,
+                        ),
+                      ),
                       pw.SizedBox(height: 8),
                       pw.Table(
                         border: pw.TableBorder.all(),
-                        defaultVerticalAlignment: pw.TableCellVerticalAlignment.middle,
+                        defaultVerticalAlignment:
+                            pw.TableCellVerticalAlignment.middle,
                         children: tableRows,
                       ),
                       pw.SizedBox(height: 32),
                       pw.Center(
                         child: pw.Text(
                           'Download Upasthit App from Play Store',
-                          style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold, color: PdfColors.blue800),
+                          style: pw.TextStyle(
+                            fontSize: 16,
+                            fontWeight: pw.FontWeight.bold,
+                            color: PdfColors.blue800,
+                          ),
                         ),
                       ),
                     ],

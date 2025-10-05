@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../widgets/gpa_widget.dart';
 
 class GPACalculatorScreen extends StatelessWidget {
+  const GPACalculatorScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,10 +18,7 @@ class GPACalculatorScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Colors.blue.shade50,
-              Colors.white,
-            ],
+            colors: [Colors.blue.shade50, Colors.white],
           ),
         ),
         child: SingleChildScrollView(
@@ -34,16 +33,18 @@ class GPACalculatorScreen extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      Colors.orange.shade100,
-                      Colors.orange.shade50,
-                    ],
+                    colors: [Colors.orange.shade100, Colors.orange.shade50],
                   ),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: Colors.orange.shade200),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color.fromARGB(255, 255, 168, 37).withOpacity(0.02),
+                      color: const Color.fromARGB(
+                        255,
+                        255,
+                        168,
+                        37,
+                      ).withOpacity(0.02),
                       spreadRadius: 1,
                       blurRadius: 8,
                       offset: const Offset(0, 4),
@@ -55,7 +56,11 @@ class GPACalculatorScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.lightbulb_rounded, color: Colors.orange.shade600, size: 24),
+                        Icon(
+                          Icons.lightbulb_rounded,
+                          color: Colors.orange.shade600,
+                          size: 24,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'How to Use',
@@ -68,10 +73,26 @@ class GPACalculatorScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    _buildInstructionItem('1', 'Enter your target GPA (e.g., 3.5)', Icons.flag),
-                    _buildInstructionItem('2', 'Enter total semesters in your program', Icons.calendar_month),
-                    _buildInstructionItem('3', 'Add current GPA and completed semesters if any', Icons.school),
-                    _buildInstructionItem('4', 'Click "Calculate" to see required GPA per semester', Icons.calculate),
+                    _buildInstructionItem(
+                      '1',
+                      'Enter your target GPA (e.g., 3.5)',
+                      Icons.flag,
+                    ),
+                    _buildInstructionItem(
+                      '2',
+                      'Enter total semesters in your program',
+                      Icons.calendar_month,
+                    ),
+                    _buildInstructionItem(
+                      '3',
+                      'Add current GPA and completed semesters if any',
+                      Icons.school,
+                    ),
+                    _buildInstructionItem(
+                      '4',
+                      'Click "Calculate" to see required GPA per semester',
+                      Icons.calculate,
+                    ),
                   ],
                 ),
               ),

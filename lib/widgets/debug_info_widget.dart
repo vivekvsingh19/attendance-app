@@ -49,10 +49,19 @@ class DebugInfoWidget extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              _buildDebugRow('Login Status', provider.isLoggedIn ? 'Logged In' : 'Not Logged In'),
-              _buildDebugRow('Loading State', provider.isLoading ? 'Loading...' : 'Idle'),
+              _buildDebugRow(
+                'Login Status',
+                provider.isLoggedIn ? 'Logged In' : 'Not Logged In',
+              ),
+              _buildDebugRow(
+                'Loading State',
+                provider.isLoading ? 'Loading...' : 'Idle',
+              ),
               _buildDebugRow('College ID', provider.collegeId ?? 'None'),
-              _buildDebugRow('Total Subjects', provider.subjects.length.toString()),
+              _buildDebugRow(
+                'Total Subjects',
+                provider.subjects.length.toString(),
+              ),
               _buildDebugRow('Error State', provider.error ?? 'None'),
               if (provider.subjects.isNotEmpty) ...[
                 const SizedBox(height: 8),
@@ -65,12 +74,12 @@ class DebugInfoWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                ...provider.subjects.map((subject) => 
-                  _buildDebugRow(
+                ...provider.subjects.map(
+                  (subject) => _buildDebugRow(
                     subject.name,
                     '${subject.attendedClasses}/${subject.totalClasses} (${subject.attendancePercentage.toStringAsFixed(1)}%)',
-                  )
-                ).toList(),
+                  ),
+                ),
               ],
             ],
           ),

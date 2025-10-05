@@ -40,17 +40,12 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(10),
               child: Row(
                 children: [
-                 // Container(
-                   // padding: const EdgeInsets.all(8),
-                   // decoration: BoxDecoration(
-                    //  borderRadius: BorderRadius.circular(12),
-                   // ),
-                     Image.asset(
-                      'assets/images/75+.png',
-                      width: 34,
-                      height: 34,
-                      
-                    ),
+                  // Container(
+                  // padding: const EdgeInsets.all(8),
+                  // decoration: BoxDecoration(
+                  //  borderRadius: BorderRadius.circular(12),
+                  // ),
+                  Image.asset('assets/images/75+.png', width: 34, height: 34),
                   //),
                   const SizedBox(width: 12),
                   Expanded(
@@ -82,10 +77,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   Consumer<AttendanceProvider>(
                     builder: (context, provider, child) {
                       return IconButton(
-                        onPressed: () => ShareHelper.showShareOptions(context, provider),
+                        onPressed: () =>
+                            ShareHelper.showShareOptions(context, provider),
                         icon: const Icon(Icons.share_rounded),
                         style: IconButton.styleFrom(
-                         // backgroundColor: const Color(0xFF667EEA).withOpacity(0.1),
+                          // backgroundColor: const Color(0xFF667EEA).withOpacity(0.1),
                           foregroundColor: const Color(0xFF667EEA),
                           padding: const EdgeInsets.all(12),
                         ),
@@ -102,12 +98,18 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context, provider, child) {
                 if (provider.announcements.isEmpty) {
                   return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 6,
+                    ),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade50,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade200, width: 0.5),
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 0.5,
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -131,10 +133,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 }
-                
+
                 final latestAnnouncement = provider.announcements.first;
                 return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 6,
+                  ),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -184,7 +189,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 if (latestAnnouncement.isImportant)
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Colors.red.shade50,
                                       borderRadius: BorderRadius.circular(4),
@@ -241,13 +249,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (provider.isLoading)
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 6,
+                          ),
                           child: Row(
                             children: const [
                               SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               ),
                               SizedBox(width: 12),
                               Text('Refreshing attendance...'),
@@ -255,10 +268,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       // Show offline indicator if using cached data
-                      if (provider.error != null && provider.error!.contains('offline'))
+                      if (provider.error != null &&
+                          provider.error!.contains('offline'))
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 8,
+                          ),
                           margin: const EdgeInsets.only(bottom: 8),
                           color: Colors.orange.shade50,
                           child: Row(
@@ -295,68 +312,75 @@ class _HomeScreenState extends State<HomeScreen> {
                             // Force refresh attendance data from server
                             await provider.forceRefreshFromServer();
                             // Also refresh announcements
-                            final announcementProvider = context.read<AnnouncementProvider>();
+                            final announcementProvider = context
+                                .read<AnnouncementProvider>();
                             await announcementProvider.fetchAnnouncements();
                           },
                           child: SingleChildScrollView(
                             physics: const AlwaysScrollableScrollPhysics(),
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 16,
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                        // Quick View Stats
-                        _buildQuickViewStats(provider, context),
-                        const SizedBox(height: 16),
-                        // Calculator Cards Row
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildStatCard(
-                                title: 'Calculator',
-                                value: '',
-                                color: const Color(0xFF9F7AEA),
-                                icon: Icons.calculate_outlined,
-                                onTap: () => _showCalculator(context),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildStatCard(
-                                title: 'GPA Calculator',
-                                value: '',
-                                color: const Color(0xFF4FC3F7),
-                                icon: Icons.grade_rounded,
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => GPACalculatorScreen()),
+                                // Quick View Stats
+                                _buildQuickViewStats(provider, context),
+                                const SizedBox(height: 16),
+                                // Calculator Cards Row
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildStatCard(
+                                        title: 'Calculator',
+                                        value: '',
+                                        color: const Color(0xFF9F7AEA),
+                                        icon: Icons.calculate_outlined,
+                                        onTap: () => _showCalculator(context),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: _buildStatCard(
+                                        title: 'GPA Calculator',
+                                        value: '',
+                                        color: const Color(0xFF4FC3F7),
+                                        icon: Icons.grade_rounded,
+                                        onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                GPACalculatorScreen(),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        // Date-wise Attendance Card
-                        // Row(
-                        //   children: [
-                        //     Expanded(
-                        //       child: _buildStatCard(
-                        //         title: 'Date-wise Attendance',
-                        //         value: '',
-                        //         color: const Color(0xFF10B981),
-                        //         icon: Icons.calendar_month_rounded,
-                        //         onTap: () => Navigator.push(
-                        //           context,
-                        //           MaterialPageRoute(builder: (context) => const DatewiseAttendanceScreen()),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
-                        const SizedBox(height: 32),
-                        // Visual Graph Section
-                        _buildAttendanceGraph(provider),
-                        const SizedBox(height: 32),
-                      ],
+                                const SizedBox(height: 12),
+                                // Date-wise Attendance Card
+                                // Row(
+                                //   children: [
+                                //     Expanded(
+                                //       child: _buildStatCard(
+                                //         title: 'Date-wise Attendance',
+                                //         value: '',
+                                //         color: const Color(0xFF10B981),
+                                //         icon: Icons.calendar_month_rounded,
+                                //         onTap: () => Navigator.push(
+                                //           context,
+                                //           MaterialPageRoute(builder: (context) => const DatewiseAttendanceScreen()),
+                                //         ),
+                                //       ),
+                                //     ),
+                                //   ],
+                                // ),
+                                const SizedBox(height: 32),
+                                // Visual Graph Section
+                                _buildAttendanceGraph(provider),
+                                const SizedBox(height: 32),
+                              ],
                             ),
                           ),
                         ),
@@ -372,11 +396,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildQuickViewStats(AttendanceProvider provider, BuildContext context) {
+  Widget _buildQuickViewStats(
+    AttendanceProvider provider,
+    BuildContext context,
+  ) {
     final threshold = provider.settings.attendanceThreshold;
     final percentage = provider.overallAttendancePercentage;
     final totalSubjects = provider.subjects.length;
-    final criticalSubjects = provider.subjects.where((subject) => subject.attendancePercentage < threshold).length;
+    final criticalSubjects = provider.subjects
+        .where((subject) => subject.attendancePercentage < threshold)
+        .length;
     final safeBunks = provider.totalSafeBunks;
 
     return Container(
@@ -396,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-         // Row(
+          // Row(
           //   children: [
           //     Container(
           //       padding: const EdgeInsets.all(10),
@@ -427,7 +456,7 @@ class _HomeScreenState extends State<HomeScreen> {
           //   ],
           // ),
           // const SizedBox(height: 24),
-          
+
           // Overall Attendance - Horizontal Card
           Container(
             width: double.infinity,
@@ -435,22 +464,33 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.getAttendanceColor(percentage, threshold).withOpacity(0.1),
-                  AppColors.getAttendanceColor(percentage, threshold).withOpacity(0.05),
+                  AppColors.getAttendanceColor(
+                    percentage,
+                    threshold,
+                  ).withOpacity(0.1),
+                  AppColors.getAttendanceColor(
+                    percentage,
+                    threshold,
+                  ).withOpacity(0.05),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: AppColors.getAttendanceColor(percentage, threshold).withOpacity(0.2),
+                color: AppColors.getAttendanceColor(
+                  percentage,
+                  threshold,
+                ).withOpacity(0.2),
                 width: 1,
               ),
             ),
             child: Row(
               children: [
                 Icon(
-                  percentage >= threshold ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+                  percentage >= threshold
+                      ? Icons.trending_up_rounded
+                      : Icons.trending_down_rounded,
                   color: AppColors.getAttendanceColor(percentage, threshold),
                   size: 32,
                 ),
@@ -473,16 +513,25 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.getAttendanceColor(percentage, threshold),
+                          color: AppColors.getAttendanceColor(
+                            percentage,
+                            threshold,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: AppColors.getAttendanceColor(percentage, threshold).withOpacity(0.1),
+                    color: AppColors.getAttendanceColor(
+                      percentage,
+                      threshold,
+                    ).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -490,7 +539,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.getAttendanceColor(percentage, threshold),
+                      color: AppColors.getAttendanceColor(
+                        percentage,
+                        threshold,
+                      ),
                     ),
                   ),
                 ),
@@ -498,7 +550,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Three Stats Row
           Row(
             children: [
@@ -553,27 +605,22 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: color.withOpacity(0.2),
-            width: 1,
-          ),
-          boxShadow: onTap != null ? [
-            BoxShadow(
-              color: color.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ] : null,
+          border: Border.all(color: color.withOpacity(0.2), width: 1),
+          boxShadow: onTap != null
+              ? [
+                  BoxShadow(
+                    color: color.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: color,
-              size: 20,
-            ),
+            Icon(icon, color: color, size: 20),
             if (value.isNotEmpty) ...[
               const SizedBox(height: 6),
               Text(
@@ -621,7 +668,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return StatefulBuilder(
       builder: (context, setState) {
-        void _onButtonPressed(String buttonText) {
+        void onButtonPressed(String buttonText) {
           setState(() {
             if (buttonText == 'C') {
               display = '0';
@@ -629,7 +676,10 @@ class _HomeScreenState extends State<HomeScreen> {
               firstNumber = 0;
               secondNumber = 0;
               isOperationPressed = false;
-            } else if (buttonText == '+' || buttonText == '-' || buttonText == '×' || buttonText == '÷') {
+            } else if (buttonText == '+' ||
+                buttonText == '-' ||
+                buttonText == '×' ||
+                buttonText == '÷') {
               if (operation.isNotEmpty && !isOperationPressed) {
                 // Complete pending operation first
                 secondNumber = double.parse(display);
@@ -644,7 +694,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     firstNumber = firstNumber * secondNumber;
                     break;
                   case '÷':
-                    firstNumber = secondNumber != 0 ? firstNumber / secondNumber : 0;
+                    firstNumber = secondNumber != 0
+                        ? firstNumber / secondNumber
+                        : 0;
                     break;
                 }
                 display = firstNumber.toString();
@@ -670,7 +722,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     display = (firstNumber * secondNumber).toString();
                     break;
                   case '÷':
-                    display = secondNumber != 0 
+                    display = secondNumber != 0
                         ? (firstNumber / secondNumber).toString()
                         : 'Error';
                     break;
@@ -680,7 +732,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   display = display.substring(0, display.length - 2);
                 }
                 operation = '';
-                firstNumber = double.parse(display.contains('Error') ? '0' : display);
+                firstNumber = double.parse(
+                  display.contains('Error') ? '0' : display,
+                );
                 isOperationPressed = false;
               }
             } else if (buttonText == '.') {
@@ -704,7 +758,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         }
 
-        Widget _buildButton(String text, {Color? color, Color? textColor}) {
+        Widget buildButton(String text, {Color? color, Color? textColor}) {
           return Expanded(
             child: Container(
               height: 60,
@@ -718,7 +772,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   elevation: 0,
                 ),
-                onPressed: () => _onButtonPressed(text),
+                onPressed: () => onButtonPressed(text),
                 child: Text(
                   text,
                   style: const TextStyle(
@@ -795,7 +849,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Calculator display
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
                     margin: const EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade50,
@@ -822,27 +879,47 @@ class _HomeScreenState extends State<HomeScreen> {
                           // Row 1: C, ÷, ×, -
                           Row(
                             children: [
-                              _buildButton('C', color: Colors.red.shade100, textColor: Colors.red.shade700),
-                              _buildButton('÷', color: const Color(0xFF9F7AEA).withOpacity(0.1), textColor: const Color(0xFF9F7AEA)),
-                              _buildButton('×', color: const Color(0xFF9F7AEA).withOpacity(0.1), textColor: const Color(0xFF9F7AEA)),
-                              _buildButton('-', color: const Color(0xFF9F7AEA).withOpacity(0.1), textColor: const Color(0xFF9F7AEA)),
+                              buildButton(
+                                'C',
+                                color: Colors.red.shade100,
+                                textColor: Colors.red.shade700,
+                              ),
+                              buildButton(
+                                '÷',
+                                color: const Color(0xFF9F7AEA).withOpacity(0.1),
+                                textColor: const Color(0xFF9F7AEA),
+                              ),
+                              buildButton(
+                                '×',
+                                color: const Color(0xFF9F7AEA).withOpacity(0.1),
+                                textColor: const Color(0xFF9F7AEA),
+                              ),
+                              buildButton(
+                                '-',
+                                color: const Color(0xFF9F7AEA).withOpacity(0.1),
+                                textColor: const Color(0xFF9F7AEA),
+                              ),
                             ],
                           ),
                           // Row 2: 7, 8, 9, +
                           Row(
                             children: [
-                              _buildButton('7'),
-                              _buildButton('8'),
-                              _buildButton('9'),
-                              _buildButton('+', color: const Color(0xFF9F7AEA).withOpacity(0.1), textColor: const Color(0xFF9F7AEA)),
+                              buildButton('7'),
+                              buildButton('8'),
+                              buildButton('9'),
+                              buildButton(
+                                '+',
+                                color: const Color(0xFF9F7AEA).withOpacity(0.1),
+                                textColor: const Color(0xFF9F7AEA),
+                              ),
                             ],
                           ),
                           // Row 3: 4, 5, 6
                           Row(
                             children: [
-                              _buildButton('4'),
-                              _buildButton('5'),
-                              _buildButton('6'),
+                              buildButton('4'),
+                              buildButton('5'),
+                              buildButton('6'),
                               Expanded(
                                 child: Container(
                                   height: 60,
@@ -856,7 +933,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       elevation: 0,
                                     ),
-                                    onPressed: () => _onButtonPressed('='),
+                                    onPressed: () => onButtonPressed('='),
                                     child: const Text(
                                       '=',
                                       style: TextStyle(
@@ -872,9 +949,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           // Row 4: 1, 2, 3
                           Row(
                             children: [
-                              _buildButton('1'),
-                              _buildButton('2'),
-                              _buildButton('3'),
+                              buildButton('1'),
+                              buildButton('2'),
+                              buildButton('3'),
                               const Expanded(child: SizedBox()),
                             ],
                           ),
@@ -895,7 +972,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       elevation: 0,
                                     ),
-                                    onPressed: () => _onButtonPressed('0'),
+                                    onPressed: () => onButtonPressed('0'),
                                     child: const Text(
                                       '0',
                                       style: TextStyle(
@@ -906,7 +983,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               ),
-                              _buildButton('.'),
+                              buildButton('.'),
                               const Expanded(child: SizedBox()),
                             ],
                           ),
@@ -974,10 +1051,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8),
             Text(
               'Attendance graph will appear here once you have subjects',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade500,
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
               textAlign: TextAlign.center,
             ),
           ],
@@ -986,7 +1060,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final threshold = provider.settings.attendanceThreshold;
-    
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -1006,7 +1080,6 @@ class _HomeScreenState extends State<HomeScreen> {
           // Header
           Row(
             children: [
-              
               const SizedBox(width: 12),
               const Expanded(
                 child: Text(
@@ -1037,7 +1110,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 24),
-          
+
           // Scroll hint for many subjects
           if (provider.subjects.length > 6)
             Container(
@@ -1062,29 +1135,36 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-          
+
           // Graph
           SizedBox(
             height: 180,
             child: provider.subjects.length <= 6
                 ? CustomPaint(
-                    painter: AttendanceBarChartPainter(provider.subjects, threshold),
+                    painter: AttendanceBarChartPainter(
+                      provider.subjects,
+                      threshold,
+                    ),
                     size: const Size(double.infinity, 180),
                   )
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
-                      width: provider.subjects.length * 60.0, // 60px per subject
+                      width:
+                          provider.subjects.length * 60.0, // 60px per subject
                       child: CustomPaint(
-                        painter: AttendanceBarChartPainter(provider.subjects, threshold),
+                        painter: AttendanceBarChartPainter(
+                          provider.subjects,
+                          threshold,
+                        ),
                         size: Size(provider.subjects.length * 60.0, 180),
                       ),
                     ),
                   ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Legend - Top performing subjects
           const Text(
             'Subject Performance',
@@ -1095,49 +1175,49 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          
+
           // Show top 3 subjects
-          ...provider.subjects
-              .take(3)
-              .map((subject) {
-                final color = AppColors.getAttendanceColor(subject.attendancePercentage, threshold);
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: color,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          subject.name,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF64748B),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        '${subject.attendancePercentage.toStringAsFixed(1)}%',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: color,
-                        ),
-                      ),
-                    ],
+          ...provider.subjects.take(3).map((subject) {
+            final color = AppColors.getAttendanceColor(
+              subject.attendancePercentage,
+              threshold,
+            );
+            return Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                );
-              })
-              .toList(),
-          
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      subject.name,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF64748B),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '${subject.attendancePercentage.toStringAsFixed(1)}%',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+
           if (provider.subjects.length > 3) ...[
             const SizedBox(height: 4),
             Text(
@@ -1179,7 +1259,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showCriticalSubjects(BuildContext context, AttendanceProvider provider) {
+  void _showCriticalSubjects(
+    BuildContext context,
+    AttendanceProvider provider,
+  ) {
     final threshold = provider.settings.attendanceThreshold;
     final criticalSubjects = provider.subjects
         .where((subject) => subject.attendancePercentage < threshold)
@@ -1281,11 +1364,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: color.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(
-                            icon,
-                            color: color,
-                            size: 20,
-                          ),
+                          child: Icon(icon, color: color, size: 20),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -1434,7 +1513,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     final subject = subjects[index];
                     final safeBunks = _calculateSafeBunks(subject, threshold);
-                    
+
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.all(16),
@@ -1495,13 +1574,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF10B981).withOpacity(0.1),
+                                  color: const Color(
+                                    0xFF10B981,
+                                  ).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
-                                  safeBunks > 0 ? '$safeBunks bunks' : 'No bunks',
+                                  safeBunks > 0
+                                      ? '$safeBunks bunks'
+                                      : 'No bunks',
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
@@ -1526,9 +1612,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _calculateSafeBunks(Subject subject, double threshold) {
     if (subject.attendancePercentage < threshold) return 0;
-    
+
     // Calculate how many classes can be bunked while staying above threshold
-    final safeBunks = ((subject.attendedClasses * 100 - threshold * subject.totalClasses) / threshold).floor();
+    final safeBunks =
+        ((subject.attendedClasses * 100 - threshold * subject.totalClasses) /
+                threshold)
+            .floor();
     return safeBunks > 0 ? safeBunks : 0;
   }
 }
@@ -1543,7 +1632,7 @@ class PieChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2 - 10;
-    
+
     final colors = [
       const Color(0xFF667EEA),
       const Color(0xFFEF4444),
@@ -1555,8 +1644,11 @@ class PieChartPainter extends CustomPainter {
       const Color(0xFFF97316),
     ];
 
-    double totalClasses = subjects.fold(0, (sum, subject) => sum + subject.totalClasses);
-    
+    double totalClasses = subjects.fold(
+      0,
+      (sum, subject) => sum + subject.totalClasses,
+    );
+
     if (totalClasses == 0) {
       // Draw empty circle
       final paint = Paint()
@@ -1571,11 +1663,11 @@ class PieChartPainter extends CustomPainter {
     for (int i = 0; i < subjects.length; i++) {
       final subject = subjects[i];
       final sweepAngle = (subject.totalClasses / totalClasses) * 2 * pi;
-      
+
       final paint = Paint()
         ..color = colors[i % colors.length]
         ..style = PaintingStyle.fill;
-      
+
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
         startAngle,
@@ -1583,13 +1675,13 @@ class PieChartPainter extends CustomPainter {
         true,
         paint,
       );
-      
+
       // Draw border
       final borderPaint = Paint()
         ..color = Colors.white
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2;
-      
+
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
         startAngle,
@@ -1597,7 +1689,7 @@ class PieChartPainter extends CustomPainter {
         true,
         borderPaint,
       );
-      
+
       startAngle += sweepAngle;
     }
   }
@@ -1626,21 +1718,21 @@ class AttendanceBarChartPainter extends CustomPainter {
     const double bottomPadding = 40;
     final double availableWidth = size.width - (padding * 2);
     final double availableHeight = size.height - padding - bottomPadding;
-    
+
     // Dynamic bar width based on number of subjects
-    final double barWidth = subjects.length <= 6 
-        ? (availableWidth / subjects.length - 8).clamp(30, 80) 
+    final double barWidth = subjects.length <= 6
+        ? (availableWidth / subjects.length - 8).clamp(30, 80)
         : 40; // Fixed width for scrollable view
-    
+
     final double spacing = subjects.length <= 6 ? 8 : 12;
-    
+
     // Draw threshold line
     final thresholdY = padding + availableHeight * (1 - threshold / 100);
     final thresholdPaint = Paint()
       ..color = Colors.red.withOpacity(0.6)
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
-    
+
     canvas.drawLine(
       Offset(padding, thresholdY),
       Offset(size.width - padding, thresholdY),
@@ -1660,7 +1752,10 @@ class AttendanceBarChartPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
     thresholdTextPainter.layout();
-    thresholdTextPainter.paint(canvas, Offset(size.width - padding - 30, thresholdY - 15));
+    thresholdTextPainter.paint(
+      canvas,
+      Offset(size.width - padding - 30, thresholdY - 15),
+    );
 
     // Draw bars
     for (int i = 0; i < subjects.length; i++) {
@@ -1692,9 +1787,9 @@ class AttendanceBarChartPainter extends CustomPainter {
         topLeft: const Radius.circular(4),
         topRight: const Radius.circular(4),
       );
-      
+
       canvas.drawRRect(barRect, paint);
-      
+
       // Draw border
       canvas.drawRRect(barRect, borderPaint);
 
@@ -1711,11 +1806,11 @@ class AttendanceBarChartPainter extends CustomPainter {
           ),
           textDirection: TextDirection.ltr,
         );
-        
+
         textPainter.layout();
         final textX = x + (barWidth - textPainter.width) / 2;
         final textY = y + 3;
-        
+
         if (textY + textPainter.height < y + barHeight - 3) {
           textPainter.paint(canvas, Offset(textX, textY));
         }
@@ -1723,13 +1818,13 @@ class AttendanceBarChartPainter extends CustomPainter {
 
       // Draw subject name at bottom (abbreviated for many subjects)
       final subjectName = subjects.length > 10
-          ? subject.name.length > 4 
-              ? '${subject.name.substring(0, 4)}'
-              : subject.name
-          : subject.name.length > 8 
-              ? '${subject.name.substring(0, 8)}...'
-              : subject.name;
-      
+          ? subject.name.length > 4
+                ? subject.name.substring(0, 4)
+                : subject.name
+          : subject.name.length > 8
+          ? '${subject.name.substring(0, 8)}...'
+          : subject.name;
+
       final labelPainter = TextPainter(
         text: TextSpan(
           text: subjectName,
@@ -1742,7 +1837,7 @@ class AttendanceBarChartPainter extends CustomPainter {
         textDirection: TextDirection.ltr,
         textAlign: TextAlign.center,
       );
-      
+
       labelPainter.layout(maxWidth: barWidth + 5);
       final labelX = x + (barWidth - labelPainter.width) / 2;
       final labelY = size.height - bottomPadding + 5;

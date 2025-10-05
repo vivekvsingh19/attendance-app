@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 
 class GPAWidget extends StatefulWidget {
+  const GPAWidget({super.key});
+
   @override
   State<GPAWidget> createState() => _GPAWidgetState();
 }
 
 class _GPAWidgetState extends State<GPAWidget> {
   final TextEditingController _targetGpaController = TextEditingController();
-  final TextEditingController _semestersController = TextEditingController(text: '8');
+  final TextEditingController _semestersController = TextEditingController(
+    text: '8',
+  );
   final TextEditingController _currentGpaController = TextEditingController();
-  final TextEditingController _completedSemController = TextEditingController(text: '0');
+  final TextEditingController _completedSemController = TextEditingController(
+    text: '0',
+  );
   List<double> _semesterGpas = [];
 
   void _calculateRequiredGpa() {
@@ -17,7 +23,11 @@ class _GPAWidgetState extends State<GPAWidget> {
     final semesters = int.tryParse(_semestersController.text);
     final currentGpa = double.tryParse(_currentGpaController.text) ?? 0.0;
     final completed = int.tryParse(_completedSemController.text) ?? 0;
-    if (targetGpa == null || semesters == null || semesters <= 0 || completed < 0 || completed > semesters) {
+    if (targetGpa == null ||
+        semesters == null ||
+        semesters <= 0 ||
+        completed < 0 ||
+        completed > semesters) {
       setState(() {
         _semesterGpas = [];
       });
@@ -45,10 +55,7 @@ class _GPAWidgetState extends State<GPAWidget> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.blue.shade400,
-            Colors.blue.shade600,
-          ],
+          colors: [Colors.blue.shade400, Colors.blue.shade600],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -69,7 +76,11 @@ class _GPAWidgetState extends State<GPAWidget> {
               const SizedBox(width: 8),
               const Text(
                 'GPA Calculator',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
@@ -100,9 +111,15 @@ class _GPAWidgetState extends State<GPAWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.blue.shade400, width: 2),
+                      borderSide: BorderSide(
+                        color: Colors.blue.shade400,
+                        width: 2,
+                      ),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -116,9 +133,15 @@ class _GPAWidgetState extends State<GPAWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.blue.shade400, width: 2),
+                      borderSide: BorderSide(
+                        color: Colors.blue.shade400,
+                        width: 2,
+                      ),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -127,7 +150,9 @@ class _GPAWidgetState extends State<GPAWidget> {
                     Expanded(
                       child: TextField(
                         controller: _currentGpaController,
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Current GPA',
                           border: OutlineInputBorder(
@@ -135,9 +160,15 @@ class _GPAWidgetState extends State<GPAWidget> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.blue.shade400, width: 2),
+                            borderSide: BorderSide(
+                              color: Colors.blue.shade400,
+                              width: 2,
+                            ),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ),
@@ -153,16 +184,22 @@ class _GPAWidgetState extends State<GPAWidget> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.blue.shade400, width: 2),
+                            borderSide: BorderSide(
+                              color: Colors.blue.shade400,
+                              width: 2,
+                            ),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                Container(
+                SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _calculateRequiredGpa,
@@ -175,7 +212,13 @@ class _GPAWidgetState extends State<GPAWidget> {
                       ),
                       elevation: 2,
                     ),
-                    child: const Text('Calculate', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: const Text(
+                      'Calculate',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
                 if (_semesterGpas.isNotEmpty) ...[
@@ -197,10 +240,20 @@ class _GPAWidgetState extends State<GPAWidget> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.analytics, color: Colors.green.shade600, size: 18),
+                            Icon(
+                              Icons.analytics,
+                              color: Colors.green.shade600,
+                              size: 18,
+                            ),
                             const SizedBox(width: 6),
-                            Text('Required GPA per semester:', 
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.green.shade800)),
+                            Text(
+                              'Required GPA per semester:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Colors.green.shade800,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -209,10 +262,14 @@ class _GPAWidgetState extends State<GPAWidget> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: _semesterGpas.length,
                           itemBuilder: (context, index) {
-                            final completed = int.tryParse(_completedSemController.text) ?? 0;
+                            final completed =
+                                int.tryParse(_completedSemController.text) ?? 0;
                             return Container(
                               margin: const EdgeInsets.only(bottom: 4),
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(6),
@@ -224,8 +281,14 @@ class _GPAWidgetState extends State<GPAWidget> {
                                   ),
                                 ],
                               ),
-                              child: Text('Semester ${completed + index + 1}: ${_semesterGpas[index].toStringAsFixed(2)}', 
-                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.green.shade700)),
+                              child: Text(
+                                'Semester ${completed + index + 1}: ${_semesterGpas[index].toStringAsFixed(2)}',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.green.shade700,
+                                ),
+                              ),
                             );
                           },
                         ),

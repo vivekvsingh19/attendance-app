@@ -8,11 +8,13 @@ class DatewiseAttendanceScreen extends StatefulWidget {
   const DatewiseAttendanceScreen({super.key});
 
   @override
-  State<DatewiseAttendanceScreen> createState() => _DatewiseAttendanceScreenState();
+  State<DatewiseAttendanceScreen> createState() =>
+      _DatewiseAttendanceScreenState();
 }
 
 class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
-  bool _sortNewestFirst = true; // Default: newest first to show recent attendance
+  bool _sortNewestFirst =
+      true; // Default: newest first to show recent attendance
 
   // Parse date format like "25 Aug 2025" to DateTime
   DateTime _parseDate(String dateStr) {
@@ -23,19 +25,29 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
         final day = int.parse(parts[0]);
         final monthStr = parts[1];
         final year = int.parse(parts[2]);
-        
+
         // Map month abbreviations to numbers
         const monthMap = {
-          'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
-          'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+          'Jan': 1,
+          'Feb': 2,
+          'Mar': 3,
+          'Apr': 4,
+          'May': 5,
+          'Jun': 6,
+          'Jul': 7,
+          'Aug': 8,
+          'Sep': 9,
+          'Oct': 10,
+          'Nov': 11,
+          'Dec': 12,
         };
-        
+
         final month = monthMap[monthStr];
         if (month != null) {
           return DateTime(year, month, day);
         }
       }
-      
+
       // Fallback: try standard DateTime.parse
       return DateTime.parse(dateStr);
     } catch (e) {
@@ -48,16 +60,20 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     // Load date-wise attendance data (cache first, then refresh if needed)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<AttendanceProvider>();
-      debugPrint('DatewiseAttendanceScreen initState - isLoggedIn: ${provider.isLoggedIn}');
+      debugPrint(
+        'DatewiseAttendanceScreen initState - isLoggedIn: ${provider.isLoggedIn}',
+      );
       provider.loadDatewiseAttendance();
-      
+
       // Also try to force fetch if logged in and no data
       if (provider.isLoggedIn && provider.datewiseAttendance.isEmpty) {
-        debugPrint('DatewiseAttendanceScreen: Force fetching datewise attendance');
+        debugPrint(
+          'DatewiseAttendanceScreen: Force fetching datewise attendance',
+        );
         provider.fetchDatewiseAttendance();
       }
     });
@@ -82,16 +98,20 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
         actions: [
           // Filter/Sort button
           IconButton(
-            icon: Icon(_sortNewestFirst ? Iconsax.arrow_down_1 : Iconsax.arrow_up_2),
-            tooltip: _sortNewestFirst ? 'Sort: Newest First' : 'Sort: Oldest First',
+            icon: Icon(
+              _sortNewestFirst ? Iconsax.arrow_down_1 : Iconsax.arrow_up_2,
+            ),
+            tooltip: _sortNewestFirst
+                ? 'Sort: Newest First'
+                : 'Sort: Oldest First',
             onPressed: () {
               setState(() {
                 _sortNewestFirst = !_sortNewestFirst;
               });
             },
           ),
+
           // Debug button to manually fetch datewise attendance
-          
         ],
       ),
       body: Consumer<AttendanceProvider>(
@@ -103,7 +123,10 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
               if (provider.isDatewiseLoading)
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 6,
+                  ),
                   child: const Row(
                     children: [
                       SizedBox(
@@ -117,10 +140,14 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
                   ),
                 ),
               // Show offline indicator if using cached data
-              if (provider.datewiseError != null && provider.datewiseError!.contains('offline'))
+              if (provider.datewiseError != null &&
+                  provider.datewiseError!.contains('offline'))
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
                   margin: const EdgeInsets.only(bottom: 8),
                   color: Colors.orange.shade50,
                   child: Row(
@@ -169,11 +196,7 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.login,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
+                  Icon(Icons.login, size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   const Text(
                     'Please log in first',
@@ -187,10 +210,7 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
                   Text(
                     'Go to Settings and log in to view attendance data',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],
               ),
@@ -201,11 +221,7 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.calendar_today,
-                  size: 64,
-                  color: Colors.grey[400],
-                ),
+                Icon(Icons.calendar_today, size: 64, color: Colors.grey[400]),
                 const SizedBox(height: 16),
                 const Text(
                   'No date-wise attendance data',
@@ -219,10 +235,7 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
                 Text(
                   'Pull down to refresh',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
                 ),
               ],
             ),
@@ -259,7 +272,9 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
         return RefreshIndicator(
           onRefresh: () async {
             if (provider.isLoggedIn) {
-              await context.read<AttendanceProvider>().fetchDatewiseAttendance();
+              await context
+                  .read<AttendanceProvider>()
+                  .fetchDatewiseAttendance();
             }
           },
           color: const Color(0xFF10B981),
@@ -279,8 +294,10 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
   Widget _buildDateCard(DatewiseAttendanceEntry entry) {
     final presentCount = entry.subjects.where((s) => s.isPresent).length;
     final totalCount = entry.subjects.length;
-    final attendancePercentage = totalCount > 0 ? (presentCount / totalCount) * 100 : 0.0;
-    
+    final attendancePercentage = totalCount > 0
+        ? (presentCount / totalCount) * 100
+        : 0.0;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -350,9 +367,14 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: _getPercentageBackgroundColor(attendancePercentage),
+                      color: _getPercentageBackgroundColor(
+                        attendancePercentage,
+                      ),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -384,17 +406,17 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
               final idx = mapEntry.key;
               final subject = mapEntry.value;
               final isLast = idx == entry.subjects.length - 1;
-              
+
               return Container(
                 margin: EdgeInsets.only(bottom: isLast ? 0 : 8),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: subject.isPresent 
+                  color: subject.isPresent
                       ? const Color(0xFF10B981).withOpacity(0.05)
                       : const Color(0xFFEF4444).withOpacity(0.05),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: subject.isPresent 
+                    color: subject.isPresent
                         ? const Color(0xFF10B981).withOpacity(0.1)
                         : const Color(0xFFEF4444).withOpacity(0.1),
                     width: 1,
@@ -406,16 +428,16 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: subject.isPresent 
+                        color: subject.isPresent
                             ? const Color(0xFF10B981).withOpacity(0.1)
                             : const Color(0xFFEF4444).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
-                        subject.isPresent 
+                        subject.isPresent
                             ? Icons.check_circle_rounded
                             : Icons.cancel_rounded,
-                        color: subject.isPresent 
+                        color: subject.isPresent
                             ? const Color(0xFF10B981)
                             : const Color(0xFFEF4444),
                         size: 16,
@@ -441,7 +463,7 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
-                              color: subject.isPresent 
+                              color: subject.isPresent
                                   ? const Color(0xFF10B981)
                                   : const Color(0xFFEF4444),
                             ),
@@ -451,9 +473,12 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
                     ),
                     // Status badge
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
-                        color: subject.isPresent 
+                        color: subject.isPresent
                             ? const Color(0xFF10B981)
                             : const Color(0xFFEF4444),
                         borderRadius: BorderRadius.circular(20),
@@ -470,7 +495,7 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -506,5 +531,4 @@ class _DatewiseAttendanceScreenState extends State<DatewiseAttendanceScreen> {
     if (percentage >= 50) return const Color(0xFFF59E0B);
     return const Color(0xFFEF4444);
   }
-
 }
