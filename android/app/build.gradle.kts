@@ -37,17 +37,22 @@ android {
                     keystoreProperties.load(it)
                 }
                 val storeFileValue = keystoreProperties["storeFile"] as String?
-                if (storeFileValue != null && file(storeFileValue).exists()) {
-                    storeFile = file(storeFileValue)
-                    storePassword = keystoreProperties["storePassword"] as String?
-                    keyAlias = keystoreProperties["keyAlias"] as String?
-                    keyPassword = keystoreProperties["keyPassword"] as String?
+                if (storeFileValue != null) {
+                    // Look for keystore file in the android directory (parent of app)
+                    val keystoreFile = rootProject.file(storeFileValue)
+                    if (keystoreFile.exists()) {
+                        storeFile = keystoreFile
+                        storePassword = keystoreProperties["storePassword"] as String?
+                        keyAlias = keystoreProperties["keyAlias"] as String?
+                        keyPassword = keystoreProperties["keyPassword"] as String?
+                        println("Release signing configured with keystore: ${keystoreFile.absolutePath}")
+                    } else {
+                        println("Warning: Keystore file not found at ${keystoreFile.absolutePath}. Using debug signing for release.")
+                    }
                 } else {
-                    // Use debug signing if keystore file doesn't exist
-                    println("Warning: Keystore file not found. Using debug signing for release.")
+                    println("Warning: storeFile property not found in key.properties. Using debug signing for release.")
                 }
             } else {
-                // Use debug signing if key.properties doesn't exist
                 println("Warning: key.properties file not found. Using debug signing for release.")
             }
         }
@@ -58,11 +63,7 @@ android {
             // No need to manually configure signing for debug
         }
         release {
-            // Only use release signing config if properly configured
-            val releaseSigningConfig = signingConfigs.getByName("release")
-            if (releaseSigningConfig.storeFile?.exists() == true) {
-                signingConfig = releaseSigningConfig
-            }
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             isShrinkResources = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
