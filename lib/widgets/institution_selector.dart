@@ -67,7 +67,7 @@ class InstitutionSelector extends StatelessWidget {
                     ],
                   ),
                   subtitle: const Text(
-                    'accsoft.lnctu.ac.in',
+                    'accsoft2.lnctu.ac.in',
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   value: 'university',

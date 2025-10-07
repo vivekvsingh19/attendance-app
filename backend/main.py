@@ -116,8 +116,8 @@ async def login_to_portal(username: str, password: str, institution_type: str = 
     
     # Choose URL based on institution type
     if institution_type == "university":
-        login_url = "https://accsoft.lnctu.ac.in/Accsoft2/StudentLogin.aspx"
-        attendance_url = "https://accsoft.lnctu.ac.in/Accsoft2/Parents/StuAttendanceStatus.aspx"
+        login_url = "https://accsoft2.lnctu.ac.in/Accsoft2/studentLogin.aspx"
+        attendance_url = "https://accsoft2.lnctu.ac.in/Accsoft2/Parents/StuAttendanceStatus.aspx"
     else:  # default to college
         login_url = "https://portal.lnct.ac.in/Accsoft2/StudentLogin.aspx"
         attendance_url = "https://portal.lnct.ac.in/Accsoft2/Parents/StuAttendanceStatus.aspx"
