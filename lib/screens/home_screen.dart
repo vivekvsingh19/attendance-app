@@ -665,21 +665,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCalculatorModal(BuildContext context) {
     String display = '0';
+    String expression = '';
     String operation = '';
     double firstNumber = 0;
     double secondNumber = 0;
     bool isOperationPressed = false;
+    bool showResult = false;
 
     return StatefulBuilder(
       builder: (context, setState) {
+        String formatNumber(double number) {
+          if (number == number.roundToDouble()) {
+            return number.toInt().toString();
+          }
+          return number.toString();
+        }
+
         void onButtonPressed(String buttonText) {
           setState(() {
             if (buttonText == 'C') {
               display = '0';
+              expression = '';
               operation = '';
               firstNumber = 0;
               secondNumber = 0;
               isOperationPressed = false;
+              showResult = false;
             } else if (buttonText == '+' ||
                 buttonText == '-' ||
                 buttonText == '×' ||
@@ -702,59 +713,73 @@ class _HomeScreenState extends State<HomeScreen> {
                         secondNumber != 0 ? firstNumber / secondNumber : 0;
                     break;
                 }
-                display = firstNumber.toString();
-                if (display.endsWith('.0')) {
-                  display = display.substring(0, display.length - 2);
-                }
+                display = formatNumber(firstNumber);
+                expression = '${formatNumber(firstNumber)} $buttonText ';
               } else {
                 firstNumber = double.parse(display);
+                expression = '${formatNumber(firstNumber)} $buttonText ';
               }
               operation = buttonText;
               isOperationPressed = true;
+              showResult = false;
             } else if (buttonText == '=') {
-              if (operation.isNotEmpty) {
+              if (operation.isNotEmpty && !showResult) {
                 secondNumber = double.parse(display);
+                double result;
                 switch (operation) {
                   case '+':
-                    display = (firstNumber + secondNumber).toString();
+                    result = firstNumber + secondNumber;
                     break;
                   case '-':
-                    display = (firstNumber - secondNumber).toString();
+                    result = firstNumber - secondNumber;
                     break;
                   case '×':
-                    display = (firstNumber * secondNumber).toString();
+                    result = firstNumber * secondNumber;
                     break;
                   case '÷':
-                    display =
-                        secondNumber != 0
-                            ? (firstNumber / secondNumber).toString()
-                            : 'Error';
+                    result = secondNumber != 0 ? firstNumber / secondNumber : 0;
                     break;
+                  default:
+                    result = 0;
                 }
-                // Remove .0 from whole numbers
-                if (display.endsWith('.0')) {
-                  display = display.substring(0, display.length - 2);
+                
+                if (result.isInfinite || result.isNaN) {
+                  display = 'Error';
+                  expression = '';
+                } else {
+                  display = formatNumber(result);
+                  expression = '${formatNumber(firstNumber)} $operation ${formatNumber(secondNumber)} =';
                 }
+                
                 operation = '';
-                firstNumber = double.parse(
-                  display.contains('Error') ? '0' : display,
-                );
+                firstNumber = result.isInfinite || result.isNaN ? 0 : result;
                 isOperationPressed = false;
+                showResult = true;
               }
             } else if (buttonText == '.') {
               if (!display.contains('.')) {
-                if (isOperationPressed || display == '0') {
+                if (isOperationPressed || display == '0' || showResult) {
                   display = '0.';
                   isOperationPressed = false;
+                  showResult = false;
                 } else {
                   display += '.';
                 }
               }
+            } else if (buttonText == '⌫') {
+              // Backspace functionality
+              if (display.length > 1 && display != '0') {
+                display = display.substring(0, display.length - 1);
+              } else {
+                display = '0';
+              }
+              showResult = false;
             } else {
               // Number button pressed
-              if (isOperationPressed || display == '0') {
+              if (isOperationPressed || display == '0' || showResult) {
                 display = buttonText;
                 isOperationPressed = false;
+                showResult = false;
               } else {
                 display += buttonText;
               }
@@ -853,24 +878,44 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Calculator display
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 16,
-                    ),
+                    padding: const EdgeInsets.all(20),
                     margin: const EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade50,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.grey.shade200),
                     ),
-                    child: Text(
-                      display,
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF1E293B),
-                      ),
-                      textAlign: TextAlign.right,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // Expression history (small text)
+                        if (expression.isNotEmpty)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Text(
+                              expression,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.right,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        // Main display (large text)
+                        Text(
+                          display,
+                          style: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1E293B),
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -880,13 +925,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         children: [
-                          // Row 1: C, ÷, ×, -
+                          // Row 1: C, ⌫, ÷, ×
                           Row(
                             children: [
                               buildButton(
                                 'C',
                                 color: Colors.red.shade100,
                                 textColor: Colors.red.shade700,
+                              ),
+                              buildButton(
+                                '⌫',
+                                color: Colors.orange.shade100,
+                                textColor: Colors.orange.shade700,
                               ),
                               buildButton(
                                 '÷',
@@ -898,6 +948,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: const Color(0xFF9F7AEA).withOpacity(0.1),
                                 textColor: const Color(0xFF9F7AEA),
                               ),
+                            ],
+                          ),
+                          // Row 2: 7, 8, 9, -
+                          Row(
+                            children: [
+                              buildButton('7'),
+                              buildButton('8'),
+                              buildButton('9'),
                               buildButton(
                                 '-',
                                 color: const Color(0xFF9F7AEA).withOpacity(0.1),
@@ -905,12 +963,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          // Row 2: 7, 8, 9, +
+                          // Row 3: 4, 5, 6, +
                           Row(
                             children: [
-                              buildButton('7'),
-                              buildButton('8'),
-                              buildButton('9'),
+                              buildButton('4'),
+                              buildButton('5'),
+                              buildButton('6'),
                               buildButton(
                                 '+',
                                 color: const Color(0xFF9F7AEA).withOpacity(0.1),
@@ -918,12 +976,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          // Row 3: 4, 5, 6
+                          // Row 4: 1, 2, 3, =
                           Row(
                             children: [
-                              buildButton('4'),
-                              buildButton('5'),
-                              buildButton('6'),
+                              buildButton('1'),
+                              buildButton('2'),
+                              buildButton('3'),
                               Expanded(
                                 child: Container(
                                   height: 60,
@@ -950,16 +1008,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          // Row 4: 1, 2, 3
-                          Row(
-                            children: [
-                              buildButton('1'),
-                              buildButton('2'),
-                              buildButton('3'),
-                              const Expanded(child: SizedBox()),
-                            ],
-                          ),
-                          // Row 5: 0 (wide), .
+                          // Row 5: 0 (wide), ., (empty)
                           Row(
                             children: [
                               Expanded(
