@@ -742,15 +742,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   default:
                     result = 0;
                 }
-                
+
                 if (result.isInfinite || result.isNaN) {
                   display = 'Error';
                   expression = '';
                 } else {
                   display = formatNumber(result);
-                  expression = '${formatNumber(firstNumber)} $operation ${formatNumber(secondNumber)} =';
+                  expression =
+                      '${formatNumber(firstNumber)} $operation ${formatNumber(secondNumber)} =';
                 }
-                
+
                 operation = '';
                 firstNumber = result.isInfinite || result.isNaN ? 0 : result;
                 isOperationPressed = false;
