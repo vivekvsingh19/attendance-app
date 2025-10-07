@@ -9,7 +9,6 @@ import '../utils/colors.dart';
 import '../utils/share_helper.dart';
 import '../models/subject.dart';
 import 'gpa_calculator_screen.dart';
-import 'datewise_attendance_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -77,8 +76,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Consumer<AttendanceProvider>(
                     builder: (context, provider, child) {
                       return IconButton(
-                        onPressed: () =>
-                            ShareHelper.showShareOptions(context, provider),
+                        onPressed:
+                            () =>
+                                ShareHelper.showShareOptions(context, provider),
                         icon: const Icon(Icons.share_rounded),
                         style: IconButton.styleFrom(
                           // backgroundColor: const Color(0xFF667EEA).withOpacity(0.1),
@@ -312,8 +312,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             // Force refresh attendance data from server
                             await provider.forceRefreshFromServer();
                             // Also refresh announcements
-                            final announcementProvider = context
-                                .read<AnnouncementProvider>();
+                            final announcementProvider =
+                                context.read<AnnouncementProvider>();
                             await announcementProvider.fetchAnnouncements();
                           },
                           child: SingleChildScrollView(
@@ -347,13 +347,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         value: '',
                                         color: const Color(0xFF4FC3F7),
                                         icon: Icons.grade_rounded,
-                                        onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                GPACalculatorScreen(),
-                                          ),
-                                        ),
+                                        onTap:
+                                            () => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (context) =>
+                                                        GPACalculatorScreen(),
+                                              ),
+                                            ),
                                       ),
                                     ),
                                   ],
@@ -403,9 +405,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final threshold = provider.settings.attendanceThreshold;
     final percentage = provider.overallAttendancePercentage;
     final totalSubjects = provider.subjects.length;
-    final criticalSubjects = provider.subjects
-        .where((subject) => subject.attendancePercentage < threshold)
-        .length;
+    final criticalSubjects =
+        provider.subjects
+            .where((subject) => subject.attendancePercentage < threshold)
+            .length;
     final safeBunks = provider.totalSafeBunks;
 
     return Container(
@@ -606,15 +609,16 @@ class _HomeScreenState extends State<HomeScreen> {
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: color.withOpacity(0.2), width: 1),
-          boxShadow: onTap != null
-              ? [
-                  BoxShadow(
-                    color: color.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
+          boxShadow:
+              onTap != null
+                  ? [
+                    BoxShadow(
+                      color: color.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                  : null,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -694,9 +698,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     firstNumber = firstNumber * secondNumber;
                     break;
                   case '÷':
-                    firstNumber = secondNumber != 0
-                        ? firstNumber / secondNumber
-                        : 0;
+                    firstNumber =
+                        secondNumber != 0 ? firstNumber / secondNumber : 0;
                     break;
                 }
                 display = firstNumber.toString();
@@ -722,9 +725,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     display = (firstNumber * secondNumber).toString();
                     break;
                   case '÷':
-                    display = secondNumber != 0
-                        ? (firstNumber / secondNumber).toString()
-                        : 'Error';
+                    display =
+                        secondNumber != 0
+                            ? (firstNumber / secondNumber).toString()
+                            : 'Error';
                     break;
                 }
                 // Remove .0 from whole numbers
@@ -1139,28 +1143,29 @@ class _HomeScreenState extends State<HomeScreen> {
           // Graph
           SizedBox(
             height: 180,
-            child: provider.subjects.length <= 6
-                ? CustomPaint(
-                    painter: AttendanceBarChartPainter(
-                      provider.subjects,
-                      threshold,
-                    ),
-                    size: const Size(double.infinity, 180),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      width:
-                          provider.subjects.length * 60.0, // 60px per subject
-                      child: CustomPaint(
-                        painter: AttendanceBarChartPainter(
-                          provider.subjects,
-                          threshold,
+            child:
+                provider.subjects.length <= 6
+                    ? CustomPaint(
+                      painter: AttendanceBarChartPainter(
+                        provider.subjects,
+                        threshold,
+                      ),
+                      size: const Size(double.infinity, 180),
+                    )
+                    : SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        width:
+                            provider.subjects.length * 60.0, // 60px per subject
+                        child: CustomPaint(
+                          painter: AttendanceBarChartPainter(
+                            provider.subjects,
+                            threshold,
+                          ),
+                          size: Size(provider.subjects.length * 60.0, 180),
                         ),
-                        size: Size(provider.subjects.length * 60.0, 180),
                       ),
                     ),
-                  ),
           ),
 
           const SizedBox(height: 20),
@@ -1249,13 +1254,14 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _buildSubjectsModal(
-        context: context,
-        title: 'All Subjects',
-        subjects: provider.subjects,
-        icon: Icons.auto_stories_rounded,
-        color: const Color(0xFF667EEA),
-      ),
+      builder:
+          (context) => _buildSubjectsModal(
+            context: context,
+            title: 'All Subjects',
+            subjects: provider.subjects,
+            icon: Icons.auto_stories_rounded,
+            color: const Color(0xFF667EEA),
+          ),
     );
   }
 
@@ -1264,9 +1270,10 @@ class _HomeScreenState extends State<HomeScreen> {
     AttendanceProvider provider,
   ) {
     final threshold = provider.settings.attendanceThreshold;
-    final criticalSubjects = provider.subjects
-        .where((subject) => subject.attendancePercentage < threshold)
-        .toList();
+    final criticalSubjects =
+        provider.subjects
+            .where((subject) => subject.attendancePercentage < threshold)
+            .toList();
 
     if (criticalSubjects.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1282,22 +1289,24 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _buildSubjectsModal(
-        context: context,
-        title: 'Critical Subjects',
-        subjects: criticalSubjects,
-        icon: Icons.warning_rounded,
-        color: const Color(0xFFEF4444),
-        subtitle: 'Below ${threshold.toStringAsFixed(0)}% target',
-      ),
+      builder:
+          (context) => _buildSubjectsModal(
+            context: context,
+            title: 'Critical Subjects',
+            subjects: criticalSubjects,
+            icon: Icons.warning_rounded,
+            color: const Color(0xFFEF4444),
+            subtitle: 'Below ${threshold.toStringAsFixed(0)}% target',
+          ),
     );
   }
 
   void _showSafeBunksInfo(BuildContext context, AttendanceProvider provider) {
     final threshold = provider.settings.attendanceThreshold;
-    final safeBunkSubjects = provider.subjects
-        .where((subject) => subject.attendancePercentage >= threshold)
-        .toList();
+    final safeBunkSubjects =
+        provider.subjects
+            .where((subject) => subject.attendancePercentage >= threshold)
+            .toList();
 
     if (safeBunkSubjects.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1313,11 +1322,12 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _buildSafeBunksModal(
-        context: context,
-        subjects: safeBunkSubjects,
-        threshold: threshold,
-      ),
+      builder:
+          (context) => _buildSafeBunksModal(
+            context: context,
+            subjects: safeBunkSubjects,
+            threshold: threshold,
+          ),
     );
   }
 
@@ -1651,9 +1661,10 @@ class PieChartPainter extends CustomPainter {
 
     if (totalClasses == 0) {
       // Draw empty circle
-      final paint = Paint()
-        ..color = Colors.grey.shade300
-        ..style = PaintingStyle.fill;
+      final paint =
+          Paint()
+            ..color = Colors.grey.shade300
+            ..style = PaintingStyle.fill;
       canvas.drawCircle(center, radius, paint);
       return;
     }
@@ -1664,9 +1675,10 @@ class PieChartPainter extends CustomPainter {
       final subject = subjects[i];
       final sweepAngle = (subject.totalClasses / totalClasses) * 2 * pi;
 
-      final paint = Paint()
-        ..color = colors[i % colors.length]
-        ..style = PaintingStyle.fill;
+      final paint =
+          Paint()
+            ..color = colors[i % colors.length]
+            ..style = PaintingStyle.fill;
 
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
@@ -1677,10 +1689,11 @@ class PieChartPainter extends CustomPainter {
       );
 
       // Draw border
-      final borderPaint = Paint()
-        ..color = Colors.white
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2;
+      final borderPaint =
+          Paint()
+            ..color = Colors.white
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 2;
 
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
@@ -1709,10 +1722,11 @@ class AttendanceBarChartPainter extends CustomPainter {
     if (subjects.isEmpty) return;
 
     final paint = Paint()..style = PaintingStyle.fill;
-    final borderPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1
-      ..color = Colors.grey.shade300;
+    final borderPaint =
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1
+          ..color = Colors.grey.shade300;
 
     const double padding = 20;
     const double bottomPadding = 40;
@@ -1720,18 +1734,20 @@ class AttendanceBarChartPainter extends CustomPainter {
     final double availableHeight = size.height - padding - bottomPadding;
 
     // Dynamic bar width based on number of subjects
-    final double barWidth = subjects.length <= 6
-        ? (availableWidth / subjects.length - 8).clamp(30, 80)
-        : 40; // Fixed width for scrollable view
+    final double barWidth =
+        subjects.length <= 6
+            ? (availableWidth / subjects.length - 8).clamp(30, 80)
+            : 40; // Fixed width for scrollable view
 
     final double spacing = subjects.length <= 6 ? 8 : 12;
 
     // Draw threshold line
     final thresholdY = padding + availableHeight * (1 - threshold / 100);
-    final thresholdPaint = Paint()
-      ..color = Colors.red.withOpacity(0.6)
-      ..strokeWidth = 1.5
-      ..style = PaintingStyle.stroke;
+    final thresholdPaint =
+        Paint()
+          ..color = Colors.red.withOpacity(0.6)
+          ..strokeWidth = 1.5
+          ..style = PaintingStyle.stroke;
 
     canvas.drawLine(
       Offset(padding, thresholdY),
@@ -1817,13 +1833,14 @@ class AttendanceBarChartPainter extends CustomPainter {
       }
 
       // Draw subject name at bottom (abbreviated for many subjects)
-      final subjectName = subjects.length > 10
-          ? subject.name.length > 4
-                ? subject.name.substring(0, 4)
-                : subject.name
-          : subject.name.length > 8
-          ? '${subject.name.substring(0, 8)}...'
-          : subject.name;
+      final subjectName =
+          subjects.length > 10
+              ? subject.name.length > 4
+                  ? subject.name.substring(0, 4)
+                  : subject.name
+              : subject.name.length > 8
+              ? '${subject.name.substring(0, 8)}...'
+              : subject.name;
 
       final labelPainter = TextPainter(
         text: TextSpan(

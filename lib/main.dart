@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:upgrader/upgrader.dart';
 import 'providers/attendance_provider.dart';
 import 'providers/announcement_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_navigation_wrapper.dart';
+import 'widgets/forced_update_wrapper.dart';
 
 import 'screens/splash_screen.dart';
 
@@ -74,15 +74,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           }
         ),
       ],
-      child: UpgradeAlert(
-        upgrader: Upgrader(
-          // Configure the upgrader
-          durationUntilAlertAgain: const Duration(days: 1), // Show alert daily if not updated
-          debugDisplayAlways: false, // Set to true for testing
-          debugDisplayOnce: false, // Set to true for testing
-          countryCode: 'IN', // India
-          languageCode: 'en',
-        ),
+      child: ForcedUpdateWrapper(
         child: MaterialApp(
           navigatorKey: navigatorKey,
           title: 'Upasthit',
