@@ -18,9 +18,7 @@ class ForcedUpdateWrapper extends StatelessWidget {
         countryCode: 'IN',
         languageCode: 'en',
         // Custom messages to make it clear update is mandatory
-        messages: UpgraderMessages(
-          code: 'en',
-        ),
+        messages: UpgraderMessages(code: 'en'),
       ),
       // Use material dialog style - more persistent
       dialogStyle: UpgradeDialogStyle.material,
