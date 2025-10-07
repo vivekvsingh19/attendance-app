@@ -6,10 +6,13 @@ import '../models/datewise_attendance.dart';
 
 class AttendanceService {
   // Base URL configuration - tries Heroku cloud first, then fallbacks
-  static const String _baseUrl = 'https://attendance-backend-api-a50f28666a6d.herokuapp.com'; // Your deployed Heroku app
-  static const String _fallbackBaseUrl = 'http://192.168.1.9:8000'; // Local network fallback (updated IP and port)
-  static const String _networkBaseUrl = 'http://10.0.2.2:8000'; // Android emulator fallback (updated port)
-  
+  static const String _baseUrl =
+      'https://attendance-backend-api-a50f28666a6d.herokuapp.com'; // Your deployed Heroku app
+  static const String _fallbackBaseUrl =
+      'http://192.168.1.9:8000'; // Local network fallback (updated IP and port)
+  static const String _networkBaseUrl =
+      'http://10.0.2.2:8000'; // Android emulator fallback (updated port)
+
   static Future<AttendanceResponse> loginAndFetchAttendance({
     required String collegeId,
     required String password,
@@ -31,7 +34,9 @@ class AttendanceService {
               'institution_type': institutionType,
             }),
           )
-          .timeout(const Duration(seconds: 15)); // Longer timeout for cloud service
+          .timeout(
+            const Duration(seconds: 15),
+          ); // Longer timeout for cloud service
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
@@ -50,7 +55,8 @@ class AttendanceService {
     } on SocketException {
       return AttendanceResponse(
         success: false,
-        message: 'Network error: Cannot connect to server. Please check your internet connection.',
+        message:
+            'Network error: Cannot connect to server. Please check your internet connection.',
       );
     } on HttpException {
       return AttendanceResponse(
@@ -73,10 +79,12 @@ class AttendanceService {
   static Future<bool> checkServerHealth() async {
     try {
       final baseUrl = await _getWorkingBaseUrl();
-      final response = await http.get(
-        Uri.parse('$baseUrl/health'),
-        headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 5));
+      final response = await http
+          .get(
+            Uri.parse('$baseUrl/health'),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 5));
       return response.statusCode == 200;
     } catch (e) {
       return false;
@@ -85,14 +93,18 @@ class AttendanceService {
 
   static Future<String> _getWorkingBaseUrl() async {
     print('🔍 Checking server availability...');
-    
+
     // Try Heroku first since it's the main deployment
     try {
       print('🌐 Trying Heroku: $_baseUrl');
-      final response = await http.get(
-        Uri.parse('$_baseUrl/health'),
-        headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 8)); // Longer timeout for cloud service
+      final response = await http
+          .get(
+            Uri.parse('$_baseUrl/health'),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(
+            const Duration(seconds: 8),
+          ); // Longer timeout for cloud service
       if (response.statusCode == 200) {
         print('✅ Heroku is online!');
         return _baseUrl;
@@ -100,14 +112,16 @@ class AttendanceService {
     } catch (e) {
       print('❌ Heroku failed: $e');
     }
-    
+
     // Try local network for development
     try {
       print('🏠 Trying local network: $_fallbackBaseUrl');
-      final response = await http.get(
-        Uri.parse('$_fallbackBaseUrl/health'),
-        headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 3));
+      final response = await http
+          .get(
+            Uri.parse('$_fallbackBaseUrl/health'),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 3));
       if (response.statusCode == 200) {
         print('✅ Local network is online!');
         return _fallbackBaseUrl;
@@ -120,10 +134,12 @@ class AttendanceService {
     // Try Android emulator (10.0.2.2) fallback
     try {
       print('📱 Trying Android emulator: $_networkBaseUrl');
-      final response = await http.get(
-        Uri.parse('$_networkBaseUrl/health'),
-        headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 3));
+      final response = await http
+          .get(
+            Uri.parse('$_networkBaseUrl/health'),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 3));
       if (response.statusCode == 200) {
         print('✅ Android emulator is online!');
         return _networkBaseUrl;
@@ -131,7 +147,7 @@ class AttendanceService {
     } catch (e) {
       print('❌ Android emulator failed: $e');
     }
-    
+
     print('⚠️ All servers failed, using Heroku as default');
     // Return Heroku URL as default since it's the main deployment
     return _baseUrl;
@@ -146,19 +162,16 @@ class AttendanceService {
     try {
       final baseUrl = await _getWorkingBaseUrl();
       // Use GET request with query parameters to match backend
-      final uri = Uri.parse('$baseUrl/dateWise').replace(queryParameters: {
-        'username': collegeId,
-        'password': password,
-        'institution_type': institutionType,
-      });
-      
+      final uri = Uri.parse('$baseUrl/dateWise').replace(
+        queryParameters: {
+          'username': collegeId,
+          'password': password,
+          'institution_type': institutionType,
+        },
+      );
+
       final response = await http
-          .get(
-            uri,
-            headers: {
-              'Accept': 'application/json',
-            },
-          )
+          .get(uri, headers: {'Accept': 'application/json'})
           .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -169,18 +182,26 @@ class AttendanceService {
             // The API returns [forward, backward] arrays, we want the forward array (first one)
             if (data.isNotEmpty && data[0] is List) {
               final forwardData = data[0] as List;
-              return forwardData.map((item) => DatewiseAttendanceEntry.fromJson(item)).toList();
+              return forwardData
+                  .map((item) => DatewiseAttendanceEntry.fromJson(item))
+                  .toList();
             }
           } else {
-            throw Exception(jsonData['message'] ?? 'Failed to fetch date-wise attendance');
+            throw Exception(
+              jsonData['message'] ?? 'Failed to fetch date-wise attendance',
+            );
           }
         } else if (jsonData is List) {
           // If it's directly a list, assume it's the forward data
-          return jsonData.map((item) => DatewiseAttendanceEntry.fromJson(item)).toList();
+          return jsonData
+              .map((item) => DatewiseAttendanceEntry.fromJson(item))
+              .toList();
         }
         return [];
       } else {
-        throw Exception('Failed to fetch date-wise attendance: ${response.statusCode}');
+        throw Exception(
+          'Failed to fetch date-wise attendance: ${response.statusCode}',
+        );
       }
     } catch (e) {
       throw Exception('Error fetching date-wise attendance: $e');
