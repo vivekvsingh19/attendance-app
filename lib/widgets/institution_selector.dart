@@ -39,10 +39,7 @@ class InstitutionSelector extends StatelessWidget {
                     children: [
                       Icon(Icons.school, color: Color(0xFF2E7D32), size: 20),
                       SizedBox(width: 8),
-                      Text(
-                        'LNCT College',
-                        style: TextStyle(fontSize: 14),
-                      ),
+                      Text('LNCT College', style: TextStyle(fontSize: 14)),
                     ],
                   ),
                   subtitle: const Text(
@@ -58,12 +55,13 @@ class InstitutionSelector extends StatelessWidget {
                 RadioListTile<String>(
                   title: const Row(
                     children: [
-                      Icon(Icons.account_balance, color: Color(0xFF2E7D32), size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        'LNCT University',
-                        style: TextStyle(fontSize: 14),
+                      Icon(
+                        Icons.account_balance,
+                        color: Color(0xFF2E7D32),
+                        size: 20,
                       ),
+                      SizedBox(width: 8),
+                      Text('LNCT University', style: TextStyle(fontSize: 14)),
                     ],
                   ),
                   subtitle: const Text(

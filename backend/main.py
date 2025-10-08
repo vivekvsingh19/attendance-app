@@ -30,14 +30,14 @@ def is_cache_valid(cache_entry: dict) -> bool:
     """Check if cache entry is still valid (less than 6 hours old)"""
     if not cache_entry or 'timestamp' not in cache_entry:
         return False
-    
+
     cache_time = datetime.fromisoformat(cache_entry['timestamp'])
     return datetime.now() - cache_time < timedelta(hours=CACHE_DURATION_HOURS)
 
 def get_cached_data(username: str, endpoint: str) -> Optional[dict]:
     """Retrieve cached data if valid"""
     cache_key = get_cache_key(username, endpoint)
-    
+
     if endpoint == 'attendance':
         cache_store = attendance_cache
     elif endpoint == 'datewise':
@@ -46,17 +46,17 @@ def get_cached_data(username: str, endpoint: str) -> Optional[dict]:
         cache_store = tilldate_cache
     else:
         return None
-    
+
     if cache_key in cache_store and is_cache_valid(cache_store[cache_key]):
         print(f"✅ Serving cached data for {username} - {endpoint}")
         return cache_store[cache_key]['data']
-    
+
     return None
 
 def set_cached_data(username: str, endpoint: str, data: dict) -> None:
     """Store data in cache with timestamp"""
     cache_key = get_cache_key(username, endpoint)
-    
+
     if endpoint == 'attendance':
         cache_store = attendance_cache
     elif endpoint == 'datewise':
@@ -65,7 +65,7 @@ def set_cached_data(username: str, endpoint: str, data: dict) -> None:
         cache_store = tilldate_cache
     else:
         return
-    
+
     cache_store[cache_key] = {
         'data': data,
         'timestamp': datetime.now().isoformat()
@@ -103,7 +103,7 @@ async def login_to_portal(username: str, password: str, institution_type: str = 
     Returns session and attendance page soup
     """
     session = requests.Session()
-    
+
     # Set headers to mimic a real browser (matching working version)
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -113,7 +113,7 @@ async def login_to_portal(username: str, password: str, institution_type: str = 
         'Connection': 'keep-alive',
         'Upgrade-Insecure-Requests': '1',
     }
-    
+
     # Choose URL based on institution type
     if institution_type == "university":
         login_url = "https://accsoft2.lnctu.ac.in/Accsoft2/studentLogin.aspx"
@@ -121,22 +121,22 @@ async def login_to_portal(username: str, password: str, institution_type: str = 
     else:  # default to college
         login_url = "https://portal.lnct.ac.in/Accsoft2/StudentLogin.aspx"
         attendance_url = "https://portal.lnct.ac.in/Accsoft2/Parents/StuAttendanceStatus.aspx"
-    
+
     # Get login page to extract viewstate
     response = session.get(login_url, headers=headers, timeout=10)
     soup = BeautifulSoup(response.content, 'html.parser')
-    
+
     viewstate_elem = soup.find('input', {'name': '__VIEWSTATE'})
     viewstate_gen_elem = soup.find('input', {'name': '__VIEWSTATEGENERATOR'})
     event_validation_elem = soup.find('input', {'name': '__EVENTVALIDATION'})
-    
+
     if not viewstate_elem or not event_validation_elem:
         raise Exception("Could not extract login form data")
-    
+
     viewstate = viewstate_elem['value']
     viewstate_generator = viewstate_gen_elem['value'] if viewstate_gen_elem else ''
     event_validation = event_validation_elem['value']
-    
+
     # Prepare login data (matching working version exactly)
     login_data = {
         '__VIEWSTATE': viewstate,
@@ -150,43 +150,43 @@ async def login_to_portal(username: str, password: str, institution_type: str = 
         '__EVENTARGUMENT': '',
         '__LASTFOCUS': '',
     }
-    
+
     # Submit login
     login_response = session.post(login_url, data=login_data, headers=headers, allow_redirects=True, timeout=10)
-    
+
     # Check if login was successful by looking for redirect or success indicators
     if "studentlogin.aspx" in login_response.url.lower():
         raise Exception("Invalid credentials")
-    
+
     # Access attendance page
     attendance_headers = headers.copy()
     attendance_headers['Referer'] = login_url
     attendance_response = session.get(attendance_url, headers=attendance_headers, timeout=10)
-    
+
     # Check if we're redirected back to login
     if "studentlogin.aspx" in attendance_response.url.lower():
         raise Exception("Invalid credentials")
-    
+
     # Parse the attendance page
     soup = BeautifulSoup(attendance_response.content, 'html.parser')
-    
+
     # Basic validation: Check if the page actually contains attendance data
     # This prevents cross-institution login issues
     page_text = soup.get_text().lower()
-    
+
     # Look for common attendance-related content
     has_attendance_content = any(keyword in page_text for keyword in [
         'attendance', 'subject', 'percentage', 'present', 'absent', 'total classes'
     ])
-    
+
     # Also check for tables that might contain attendance data
     tables = soup.find_all('table')
     has_data_tables = len(tables) > 0
-    
+
     # If page has no attendance content or tables, it's likely wrong credentials for this portal
     if not has_attendance_content and not has_data_tables:
         raise Exception("Invalid credentials for this institution")
-    
+
     # Additional check: Look for actual student data in tables
     has_student_data = False
     for table in tables:
@@ -201,10 +201,10 @@ async def login_to_portal(username: str, password: str, institution_type: str = 
                     if has_numbers:
                         has_student_data = True
                         break
-    
+
     if not has_student_data:
         raise Exception("No attendance data found - invalid credentials for this institution")
-    
+
     return session, soup
 
 @app.post("/login-and-fetch-attendance", response_model=AttendanceResponse)
@@ -222,30 +222,30 @@ async def login_and_fetch_attendance(request: LoginRequest):
                 message="Attendance data retrieved from cache (less than 6 hours old)",
                 data=cached_data
             )
-        
+
         print(f"🔄 Fetching fresh data for {request.college_id} - cache miss or expired")
-        
+
         # Use common login function
         session, soup = await login_to_portal(request.college_id, request.password, request.institution_type)
-        
+
         # Initialize attendance data
         attendance_data = {}
-        
+
         # Look for attendance table in the soup
         tables = soup.find_all('table')
         print(f"Found {len(tables)} tables on attendance page")
-        
+
         for i, table in enumerate(tables):
             print(f"\n=== Table {i+1} ===")
             rows = table.find_all('tr')
             print(f"Table {i+1} has {len(rows)} rows")
-            
+
             for j, row in enumerate(rows):
                 cells = row.find_all(['td', 'th'])
                 if len(cells) >= 4:  # Subject, Total, Attended, Percentage
                     cell_texts = [cell.get_text(strip=True) for cell in cells]
                     print(f"Row {j+1}: {cell_texts}")
-                    
+
                     # Try to parse attendance data
                     if j > 0 and len(cell_texts) >= 4:  # Skip header row
                         try:
@@ -258,7 +258,7 @@ async def login_and_fetch_attendance(request: LoginRequest):
                                         attended = int(cell_texts[k+1])
                                         percentage_text = cell_texts[k+2].replace('%', '').replace(' ', '')
                                         percentage = float(percentage_text)
-                                        
+
                                         if total > 0 and attended >= 0 and 0 <= percentage <= 100:
                                             attendance_data[subject] = {
                                                 "total": total,
@@ -272,13 +272,13 @@ async def login_and_fetch_attendance(request: LoginRequest):
                         except Exception as e:
                             print(f"Error parsing row: {e}")
                             continue
-        
+
         if attendance_data:
             print(f"✅ Successfully found attendance data: {attendance_data}")
-            
+
             # Cache the successful response for 6 hours
             set_cached_data(request.college_id, 'attendance', attendance_data)
-            
+
             return AttendanceResponse(
                 success=True,
                 message="Attendance data fetched successfully",
@@ -308,7 +308,7 @@ async def login_and_fetch_attendance(request: LoginRequest):
                 success=False,
                 message=f"Attendance request error: {str(e)}",
             )
-        
+
         # DEBUG: Check if we're not redirected back to login
         if "studentlogin.aspx" in attendance_response.url.lower():
             print("Redirected to login - session may have expired")
@@ -316,17 +316,17 @@ async def login_and_fetch_attendance(request: LoginRequest):
                 success=False,
                 message="Session expired or login failed. Please try again.",
             )
-        
+
         attendance_soup = BeautifulSoup(attendance_response.content, 'html.parser')
         print(f"Attendance page length: {len(attendance_response.text)}")
-        
+
         # Initialize attendance data
         attendance_data = {}
-        
+
         # Look for attendance tables
         tables = attendance_soup.find_all('table')
         print(f"Found {len(tables)} tables to analyze")
-        
+
         for table_idx, table in enumerate(tables):
             rows = table.find_all('tr')
             if len(rows) > 1:
@@ -372,13 +372,13 @@ async def login_and_fetch_attendance(request: LoginRequest):
                                     "percentage": round(percentage, 2) if percentage is not None else None
                                 }
                                 print(f"✓ Added subject: {subject} -> {attendance_data[subject]}")
-        
+
         if attendance_data:
             print(f"\n✅ Successfully found attendance data: {attendance_data}")
-            
+
             # Cache the successful response for 6 hours
             set_cached_data(request.college_id, 'attendance', attendance_data)
-            
+
             return AttendanceResponse(
                 success=True,
                 message="Attendance data fetched successfully",
@@ -393,7 +393,7 @@ async def login_and_fetch_attendance(request: LoginRequest):
                 success=False,
                 message="No attendance data found on the page. The page structure may have changed."
             )
-    
+
     except requests.exceptions.RequestException as e:
         print(f"Network error: {e}")
         return AttendanceResponse(
@@ -427,39 +427,39 @@ async def get_datewise_attendance(username: str, password: str, institution_type
                 message="Date-wise attendance retrieved from cache (less than 6 hours old)",
                 data=cached_data
             )
-        
+
         print(f"🔄 Fetching fresh date-wise data for {username} - cache miss or expired")
-        
+
         # Use common login function
         session, soup = await login_to_portal(username, password, institution_type)
-        
+
         # Find all span elements to debug what's available
         total_period_element = soup.find('span', {'id': 'ctl00_ContentPlaceHolder1_lbltotperiod'})
         not_applicable_element = soup.find('span', {'id': 'ctl00_ContentPlaceHolder1_lbltotaln'})
-        
+
         print(f"Total period element found: {total_period_element is not None}")
         print(f"Not applicable element found: {not_applicable_element is not None}")
-        
+
         # If we can't find the specific elements, let's look for any elements with 'lbltot' in the id
         if not total_period_element:
             lbltot_elements = soup.find_all('span', {'id': lambda x: x and 'lbltot' in x})
             print(f"Found {len(lbltot_elements)} elements with 'lbltot' in id:")
             for elem in lbltot_elements:
                 print(f"  ID: {elem.get('id')}, Text: {elem.get_text(strip=True)}")
-            
+
             # Try alternative ID patterns
             total_period_element = soup.find('span', {'id': lambda x: x and 'lbltotperiod' in x}) or \
                                  soup.find('span', {'id': lambda x: x and 'totperiod' in x})
-        
+
         if not not_applicable_element:
             lbltotal_elements = soup.find_all('span', {'id': lambda x: x and 'lbltotal' in x})
             print(f"Found {len(lbltotal_elements)} elements with 'lbltotal' in id:")
             for elem in lbltotal_elements:
                 print(f"  ID: {elem.get('id')}, Text: {elem.get_text(strip=True)}")
-                
+
             not_applicable_element = soup.find('span', {'id': lambda x: x and 'lbltotaln' in x}) or \
                                    soup.find('span', {'id': lambda x: x and 'totaln' in x})
-        
+
         # If still not found, return all spans for debugging
         if not total_period_element or not not_applicable_element:
             all_spans = soup.find_all('span')
@@ -470,38 +470,38 @@ async def get_datewise_attendance(username: str, password: str, institution_type
                     'id': span.get('id', 'no-id'),
                     'text': span.get_text(strip=True)[:50]  # First 50 chars
                 })
-            
+
             raise Exception(f"Could not find attendance data elements. Found spans: {span_info}")
-        
+
         total_period_text = total_period_element.get_text(strip=True)
         not_applicable_text = not_applicable_element.get_text(strip=True)
-        
+
         print(f"Total period text: {total_period_text}")
         print(f"Not applicable text: {not_applicable_text}")
-        
+
         # Extract numbers from text like "Total Period : 50"
         total = 0
         not_applicable = 0
-        
+
         if ':' in total_period_text:
             try:
                 total = int(total_period_text.split(':')[1].strip())
             except (ValueError, IndexError):
                 print(f"Could not parse total from: {total_period_text}")
-        
+
         if ':' in not_applicable_text:
             try:
                 not_applicable = int(not_applicable_text.split(':')[1].strip())
             except (ValueError, IndexError):
                 print(f"Could not parse not_applicable from: {not_applicable_text}")
-        
+
         total_rows = total + not_applicable
         print(f"Total rows to process: {total_rows}")
-        
+
         # Find attendance table
         tables = soup.find_all('table')
         print(f"Found {len(tables)} tables")
-        
+
         attendance_table = None
         for i, table in enumerate(tables):
             rows = table.find_all('tr')
@@ -510,22 +510,22 @@ async def get_datewise_attendance(username: str, password: str, institution_type
                 attendance_table = table
                 print(f"Selected table {i} as attendance table")
                 break
-        
+
         if not attendance_table:
             # Use the largest table if none found with > 20 rows
             if tables:
                 attendance_table = max(tables, key=lambda t: len(t.find_all('tr')))
                 print(f"Using largest table with {len(attendance_table.find_all('tr'))} rows")
-        
+
         if not attendance_table:
             raise Exception("Could not find any attendance table")
-        
+
         rows = attendance_table.find_all('tr')
         forward = []
         backward = []
-        
+
         print(f"Processing rows from index 24 to {min(24 + total_rows, len(rows))}")
-        
+
         # Parse attendance data starting from row 24 (0-indexed)
         processed_rows = 0
         for i in range(24, min(24 + max(total_rows, 10), len(rows))):  # Process at least 10 rows for testing
@@ -534,21 +534,21 @@ async def get_datewise_attendance(username: str, password: str, institution_type
                 date = cells[1].get_text(strip=True)
                 subject_name = cells[3].get_text(strip=True)
                 attendance_status = cells[4].get_text(strip=True)
-                
+
                 print(f"Row {i}: Date={date}, Subject={subject_name}, Status={attendance_status}")
-                
+
                 if date and subject_name:  # Only process if we have valid data
                     processed_rows += 1
                     # Create attendance object
                     attendance_object = {subject_name: attendance_status}
-                    
+
                     # Check if this date already exists in forward array
                     existing_entry = None
                     for entry in forward:
                         if entry['date'] == date:
                             existing_entry = entry
                             break
-                    
+
                     if existing_entry:
                         existing_entry['data'].append(attendance_object)
                     else:
@@ -556,9 +556,9 @@ async def get_datewise_attendance(username: str, password: str, institution_type
                             'date': date,
                             'data': [attendance_object]
                         })
-        
+
         print(f"Processed {processed_rows} valid rows")
-        
+
         # If no data found, add default message
         if not forward:
             current_date = datetime.now()
@@ -567,20 +567,20 @@ async def get_datewise_attendance(username: str, password: str, institution_type
                 'date': date_str,
                 'data': [{'Classes for this semester is yet to begin': ''}]
             })
-        
+
         # Create backward array (reverse of forward)
         backward = forward[::-1]
-        
+
         # Cache the successful response for 6 hours
         response_data = [forward, backward]
         set_cached_data(username, 'datewise', response_data)
-        
+
         return DatewiseAttendanceResponse(
             success=True,
             message="Date-wise attendance retrieved successfully",
             data=response_data
         )
-    
+
     except Exception as e:
         print(f"Error in dateWise endpoint: {e}")
         return DatewiseAttendanceResponse(
@@ -609,25 +609,25 @@ async def get_tilldate_attendance(username: str, password: str, institution_type
                 message="Till-date attendance retrieved from cache (less than 6 hours old)",
                 data=cached_data
             )
-        
+
         print(f"🔄 Fetching fresh till-date data for {username} - cache miss or expired")
-        
+
         # Use common login function
         session, soup = await login_to_portal(username, password, institution_type)
-        
+
         # Extract total period information
         total_period_element = soup.find('span', {'id': 'ctl00_ContentPlaceHolder1_lbltotperiod'})
         not_applicable_element = soup.find('span', {'id': 'ctl00_ContentPlaceHolder1_lbltotaln'})
-        
+
         # If we can't find the specific elements, try alternative patterns
         if not total_period_element:
             total_period_element = soup.find('span', {'id': lambda x: x and 'lbltotperiod' in x}) or \
                                  soup.find('span', {'id': lambda x: x and 'totperiod' in x})
-        
+
         if not not_applicable_element:
             not_applicable_element = soup.find('span', {'id': lambda x: x and 'lbltotaln' in x}) or \
                                    soup.find('span', {'id': lambda x: x and 'totaln' in x})
-        
+
         if not total_period_element or not not_applicable_element:
             # Look for any elements with attendance-related text
             all_spans = soup.find_all('span')
@@ -639,30 +639,30 @@ async def get_tilldate_attendance(username: str, password: str, institution_type
                         'id': span.get('id', 'no-id'),
                         'text': span.get_text(strip=True)
                     })
-            
+
             raise Exception(f"Could not find attendance data elements. Found relevant spans: {relevant_spans[:10]}")
-        
+
         total_period_text = total_period_element.get_text(strip=True)
         not_applicable_text = not_applicable_element.get_text(strip=True)
-        
+
         # Extract numbers from text like "Total Period : 50"
         total = 0
         not_applicable = 0
-        
+
         if ':' in total_period_text:
             try:
                 total = int(total_period_text.split(':')[1].strip())
             except (ValueError, IndexError):
                 pass
-        
+
         if ':' in not_applicable_text:
             try:
                 not_applicable = int(not_applicable_text.split(':')[1].strip())
             except (ValueError, IndexError):
                 pass
-        
+
         total_rows = total + not_applicable
-        
+
         # Find attendance table
         tables = soup.find_all('table')
         attendance_table = None
@@ -671,40 +671,40 @@ async def get_tilldate_attendance(username: str, password: str, institution_type
             if len(rows) > 20:  # Look for table with significant rows
                 attendance_table = table
                 break
-        
+
         if not attendance_table:
             # Use the largest table if none found
             if tables:
                 attendance_table = max(tables, key=lambda t: len(t.find_all('tr')))
-        
+
         if not attendance_table:
             raise Exception("Could not find attendance table")
-        
+
         rows = attendance_table.find_all('tr')
         temp = []
         total_lectures = 0
         present = 0
-        
+
         # Parse attendance data starting from row 24 (0-indexed)
         for i in range(24, min(24 + max(total_rows, 10), len(rows))):  # Process at least 10 rows for testing
             cells = rows[i].find_all('td')
             if len(cells) >= 5:
                 date = cells[1].get_text(strip=True)
                 attendance_status = cells[4].get_text(strip=True)
-                
+
                 if date and attendance_status:  # Only process if we have valid data
                     # Convert attendance status to numeric (A=0, P=1)
                     attendance_value = 0 if attendance_status.upper() == 'A' else 1
                     present += attendance_value
                     total_lectures += 1
-                    
+
                     # Check if this date already exists in temp array
                     existing_entry = None
                     for entry in temp:
                         if entry['date'] == date:
                             existing_entry = entry
                             break
-                    
+
                     if not existing_entry:
                         # Calculate percentage with 2 decimal places
                         percentage = round((present * 100) / total_lectures, 2) if total_lectures > 0 else 100.0
@@ -722,7 +722,7 @@ async def get_tilldate_attendance(username: str, password: str, institution_type
                             'totalLectures': total_lectures,
                             'percentage': percentage
                         })
-        
+
         # If no data found, add default entry
         if not temp:
             current_date = datetime.now()
@@ -733,16 +733,16 @@ async def get_tilldate_attendance(username: str, password: str, institution_type
                 'totalLectures': 0,
                 'percentage': 100.0
             })
-        
+
         # Cache the successful response for 6 hours
         set_cached_data(username, 'tilldate', temp)
-        
+
         return TillDateAttendanceResponse(
             success=True,
             message="Till-date attendance retrieved successfully",
             data=temp
         )
-    
+
     except Exception as e:
         print(f"Error in getDateWiseAttendance endpoint: {e}")
         return TillDateAttendanceResponse(
@@ -764,9 +764,9 @@ async def health_check():
         "cache_duration_hours": CACHE_DURATION_HOURS,
         "server_time": datetime.now().isoformat()
     }
-    
+
     return {
-        "status": "healthy", 
+        "status": "healthy",
         "message": "API is running with 6-hour caching for Heroku optimization",
         "cache_info": cache_stats
     }
@@ -777,17 +777,17 @@ async def clear_cache():
     Clear all cached data (admin endpoint)
     """
     global attendance_cache, datewise_cache, tilldate_cache
-    
+
     old_counts = {
         "attendance": len(attendance_cache),
         "datewise": len(datewise_cache),
         "tilldate": len(tilldate_cache)
     }
-    
+
     attendance_cache.clear()
     datewise_cache.clear()
     tilldate_cache.clear()
-    
+
     return {
         "success": True,
         "message": "All caches cleared successfully",
