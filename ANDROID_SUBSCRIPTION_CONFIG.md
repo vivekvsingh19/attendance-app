@@ -18,7 +18,7 @@ The billing library should be automatically added by the package, but if you enc
 ```gradle
 dependencies {
     // ... other dependencies
-    
+
     // Billing library (usually auto-added by purchases_flutter)
     implementation 'com.android.billingclient:billing:6.0.1'
 }
@@ -173,7 +173,7 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
-    
+
     buildTypes {
         release {
             signingConfig signingConfigs.release
