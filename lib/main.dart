@@ -1,15 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'providers/attendance_provider.dart';
 import 'providers/announcement_provider.dart';
+import 'providers/subscription_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_navigation_wrapper.dart';
+import 'screens/paywall_screen.dart';
 import 'widgets/forced_update_wrapper.dart';
+import 'config/app_config.dart';
 
 import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 🔧 Initialize RevenueCat GLOBALLY at app startup
+  // This ensures it's ALWAYS ready, even before login
+  debugPrint('🚀 Initializing RevenueCat globally...');
+  try {
+    final configuration = PurchasesConfiguration(AppConfig.revenueCatApiKey);
+
+    await Purchases.configure(configuration);
+    debugPrint('✅ RevenueCat configured globally');
+
+    // Enable debug logs in debug mode
+    if (kDebugMode) {
+      await Purchases.setLogLevel(LogLevel.debug);
+      debugPrint('🐛 Debug logging enabled');
+    }
+
+    // Verify configuration
+    bool isConfigured = await Purchases.isConfigured;
+    debugPrint('✅ SDK configured status: $isConfigured');
+  } catch (e) {
+    debugPrint('⚠️  Error initializing RevenueCat globally: $e');
+    // Don't block app startup - continue anyway
+  }
 
   runApp(const MyApp());
 }
@@ -80,6 +108,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             final provider = AnnouncementProvider();
             return provider;
           },
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SubscriptionProvider(),
         ),
       ],
       child: ForcedUpdateWrapper(
@@ -192,6 +223,17 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             '/login': (context) => const LoginScreen(),
             '/dashboard': (context) => const MainNavigationWrapper(),
             '/home': (context) => const MainNavigationWrapper(),
+          },
+          onGenerateRoute: (settings) {
+            if (settings.name == '/paywall') {
+              final args = settings.arguments as Map<String, dynamic>?;
+              return MaterialPageRoute(
+                builder: (context) => PaywallScreen(
+                  isFromLogin: args?['isFromLogin'] ?? false,
+                ),
+              );
+            }
+            return null;
           },
         ),
       ),
