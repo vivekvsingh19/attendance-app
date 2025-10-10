@@ -39,4 +39,16 @@ class AppConfig {
   // Attendance Settings
   static const double defaultAttendanceThreshold = 75.0;
   static const int lowAttendanceWarning = 70;
+
+  // Subscription Settings (RevenueCat)
+  static const String revenueCatApiKey = 'goog_QgUfeviGVHAWQOtPJahnJnEgRse';
+  static const String revenueCatAppId = 'appfa5337f5b1';
+  static const String subscriptionEntitlementId = 'pro_access';
+  static const String subscriptionProductId = 'monthly_pro';
+  static const String subscriptionBasePlanId = 'monthly-pro';
+
+  // Subscription display info
+  static const String subscriptionPrice = '₹12';
+  static const String subscriptionPeriod = 'month';
+  static const int freeTrialDays = 7;
 }
