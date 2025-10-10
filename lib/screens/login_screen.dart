@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/attendance_provider.dart';
+import '../providers/subscription_provider.dart';
 import '../services/secure_storage_service.dart';
 import '../widgets/institution_selector.dart';
 
@@ -19,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen>
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   String _selectedInstitution = 'college';
-  
+
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late Animation<double> _fadeAnimation;
@@ -42,21 +43,16 @@ class _LoginScreenState extends State<LoginScreen>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
+    ).animate(
+      CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+    );
 
     _fadeController.forward();
     _slideController.forward();
@@ -113,9 +109,9 @@ class _LoginScreenState extends State<LoginScreen>
                     children: [
                       // Login Form Card
                       _buildLoginCard(),
-                      
+
                       const SizedBox(height: 30),
-                      
+
                       // Footer
                       _buildFooter(),
                     ],
@@ -128,8 +124,6 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
   }
-
-  
 
   Widget _buildLoginCard() {
     return Container(
@@ -171,9 +165,9 @@ class _LoginScreenState extends State<LoginScreen>
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // College ID Field
               _buildInputField(
                 controller: _collegeIdController,
@@ -186,14 +180,14 @@ class _LoginScreenState extends State<LoginScreen>
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Password Field
               _buildPasswordField(),
-              
+
               const SizedBox(height: 32),
-              
+
               // Institution Selector
               InstitutionSelector(
                 selectedInstitution: _selectedInstitution,
@@ -203,9 +197,9 @@ class _LoginScreenState extends State<LoginScreen>
                   });
                 },
               ),
-              
+
               const SizedBox(height: 25),
-              
+
               // Login Button
               _buildLoginButton(),
             ],
@@ -238,10 +232,7 @@ class _LoginScreenState extends State<LoginScreen>
           controller: controller,
           obscureText: isPassword && !_isPasswordVisible,
           validator: validator,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           decoration: InputDecoration(
             prefixIcon: Container(
               margin: const EdgeInsets.all(12),
@@ -250,27 +241,24 @@ class _LoginScreenState extends State<LoginScreen>
                 color: const Color(0xFF667eea).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                icon,
-                color: const Color(0xFF667eea),
-                size: 24,
-              ),
+              child: Icon(icon, color: const Color(0xFF667eea), size: 24),
             ),
-            suffixIcon: isPassword
-                ? IconButton(
-                    icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility_off_rounded
-                          : Icons.visibility_rounded,
-                      color: Colors.grey[600],
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                  )
-                : null,
+            suffixIcon:
+                isPassword
+                    ? IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility_off_rounded
+                            : Icons.visibility_rounded,
+                        color: Colors.grey[600],
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    )
+                    : null,
             filled: true,
             fillColor: const Color(0xFFF7FAFC),
             border: OutlineInputBorder(
@@ -286,17 +274,11 @@ class _LoginScreenState extends State<LoginScreen>
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(
-                color: Color(0xFF667eea),
-                width: 2,
-              ),
+              borderSide: const BorderSide(color: Color(0xFF667eea), width: 2),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(
-                color: Colors.red,
-                width: 1,
-              ),
+              borderSide: const BorderSide(color: Colors.red, width: 1),
             ),
             hintText: 'Enter your $label',
             hintStyle: TextStyle(
@@ -335,10 +317,7 @@ class _LoginScreenState extends State<LoginScreen>
             gradient: const LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
-              colors: [
-                Color(0xFF667eea),
-                Color(0xFF764ba2),
-              ],
+              colors: [Color(0xFF667eea), Color(0xFF764ba2)],
             ),
             boxShadow: [
               BoxShadow(
@@ -357,24 +336,25 @@ class _LoginScreenState extends State<LoginScreen>
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
-            child: provider.isLoading
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            child:
+                provider.isLoading
+                    ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                    : const Text(
+                      'Sign In',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
                     ),
-                  )
-                : const Text(
-                    'Sign In',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
           ),
         );
       },
@@ -384,14 +364,9 @@ class _LoginScreenState extends State<LoginScreen>
   Widget _buildFooter() {
     return Column(
       children: [
-        
-        
         Text(
           '© Upasthit',
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.6),
-            fontSize: 12,
-          ),
+          style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12),
         ),
       ],
     );
@@ -404,6 +379,7 @@ class _LoginScreenState extends State<LoginScreen>
     HapticFeedback.mediumImpact();
 
     final provider = context.read<AttendanceProvider>();
+    final subscriptionProvider = context.read<SubscriptionProvider>();
     final username = _collegeIdController.text.trim();
     final password = _passwordController.text.trim();
 
@@ -416,11 +392,21 @@ class _LoginScreenState extends State<LoginScreen>
     // Save credentials only if login is successful
     if (provider.isLoggedIn) {
       await SecureStorageService.saveCredentials(username, password);
+
+      // Initialize RevenueCat with the college username (wait for it to complete)
+      try {
+        await subscriptionProvider.initialize(username);
+        debugPrint('✅ RevenueCat initialized successfully during login');
+      } catch (e) {
+        debugPrint('⚠️  Error initializing subscription: $e');
+        // Continue to home even if subscription check fails
+      }
     }
 
     // If login failed and no cached data, show special dialog
     if (!provider.isLoggedIn && provider.attendanceList.isEmpty) {
-      if (provider.error != null && provider.error!.contains('last saved data')) {
+      if (provider.error != null &&
+          provider.error!.contains('last saved data')) {
         // This is offline mode with cached data
         if (mounted) {
           Navigator.of(context).pushReplacementNamed('/home');
@@ -436,7 +422,9 @@ class _LoginScreenState extends State<LoginScreen>
     }
 
     // If cached data is loaded (offline mode), just go to home
-    if (provider.isLoggedIn && provider.error != null && provider.error!.contains('last saved data')) {
+    if (provider.isLoggedIn &&
+        provider.error != null &&
+        provider.error!.contains('last saved data')) {
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/home');
       }
@@ -451,16 +439,17 @@ class _LoginScreenState extends State<LoginScreen>
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Login Failed'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Login Failed'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }
