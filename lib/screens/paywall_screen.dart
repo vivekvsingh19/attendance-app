@@ -147,12 +147,16 @@ class _PaywallScreenState extends State<PaywallScreen>
     });
 
     try {
-      debugPrint('🔄 Starting purchase for package: ${_selectedPackage!.identifier}');
+      debugPrint(
+        '🔄 Starting purchase for package: ${_selectedPackage!.identifier}',
+      );
       final customerInfo = await Purchases.purchasePackage(_selectedPackage!);
 
       debugPrint('✅ Purchase completed! Checking entitlements...');
-      debugPrint('📦 All entitlements: ${customerInfo.entitlements.all.keys.toList()}');
-      
+      debugPrint(
+        '📦 All entitlements: ${customerInfo.entitlements.all.keys.toList()}',
+      );
+
       final proEntitlement = customerInfo.entitlements.all['Upasthit Pro'];
       debugPrint('🎯 Upasthit Pro entitlement: ${proEntitlement?.identifier}');
       debugPrint('✔️  Is Active: ${proEntitlement?.isActive}');
@@ -163,7 +167,9 @@ class _PaywallScreenState extends State<PaywallScreen>
         if (!mounted) return;
         final subscriptionProvider = context.read<SubscriptionProvider>();
         await subscriptionProvider.checkSubscriptionStatus();
-        debugPrint('✅ Subscription provider updated. Premium status: ${subscriptionProvider.isPremium}');
+        debugPrint(
+          '✅ Subscription provider updated. Premium status: ${subscriptionProvider.isPremium}',
+        );
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -636,7 +642,7 @@ class _PaywallScreenState extends State<PaywallScreen>
     // Check if product has introductory price (free trial)
     // Note: You'll need to configure this in RevenueCat/App Store Connect
     final hasFreeTrial = product.introductoryPrice != null;
-    
+
     // 🐛 DEBUG: Print trial information
     debugPrint('🔍 === FREE TRIAL DEBUG ===');
     debugPrint('Product ID: ${product.identifier}');
@@ -1069,12 +1075,16 @@ class _PaywallModalState extends State<PaywallModal>
     });
 
     try {
-      debugPrint('🔄 Starting purchase for package: ${_selectedPackage!.identifier}');
+      debugPrint(
+        '🔄 Starting purchase for package: ${_selectedPackage!.identifier}',
+      );
       final customerInfo = await Purchases.purchasePackage(_selectedPackage!);
 
       debugPrint('✅ Purchase completed! Checking entitlements...');
-      debugPrint('📦 All entitlements: ${customerInfo.entitlements.all.keys.toList()}');
-      
+      debugPrint(
+        '📦 All entitlements: ${customerInfo.entitlements.all.keys.toList()}',
+      );
+
       final proEntitlement = customerInfo.entitlements.all['Upasthit Pro'];
       debugPrint('🎯 Upasthit Pro entitlement: ${proEntitlement?.identifier}');
       debugPrint('✔️  Is Active: ${proEntitlement?.isActive}');
@@ -1085,7 +1095,9 @@ class _PaywallModalState extends State<PaywallModal>
         if (!mounted) return;
         final subscriptionProvider = context.read<SubscriptionProvider>();
         await subscriptionProvider.checkSubscriptionStatus();
-        debugPrint('✅ Subscription provider updated. Premium status: ${subscriptionProvider.isPremium}');
+        debugPrint(
+          '✅ Subscription provider updated. Premium status: ${subscriptionProvider.isPremium}',
+        );
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1525,7 +1537,7 @@ class _PaywallModalState extends State<PaywallModal>
 
     // Check if product has introductory price (free trial)
     final hasFreeTrial = product.introductoryPrice != null;
-    
+
     // 🐛 DEBUG: Print trial information
     debugPrint('🔍 === FREE TRIAL DEBUG (Modal) ===');
     debugPrint('Product ID: ${product.identifier}');

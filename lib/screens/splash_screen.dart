@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     final provider = context.read<AttendanceProvider>();
     final subscriptionProvider = context.read<SubscriptionProvider>();
-    
+
     // Load lightweight settings so UI can read preferences immediately
     await provider.loadSettings();
 
@@ -42,20 +42,24 @@ class _SplashScreenState extends State<SplashScreen> {
 
       if (wasLoggedIn) {
         // Initialize RevenueCat with user BEFORE navigating
-        debugPrint('👤 User was previously logged in, initializing RevenueCat...');
+        debugPrint(
+          '👤 User was previously logged in, initializing RevenueCat...',
+        );
         try {
           final creds = await SecureStorageService.getCredentials();
           final username = creds['username'];
-          
+
           if (username != null && username.isNotEmpty) {
             debugPrint('🔗 Linking user to RevenueCat: $username');
             await subscriptionProvider.initialize(username);
-            debugPrint('✅ RevenueCat initialized. Premium: ${subscriptionProvider.isPremium}');
+            debugPrint(
+              '✅ RevenueCat initialized. Premium: ${subscriptionProvider.isPremium}',
+            );
           }
         } catch (e) {
           debugPrint('⚠️  Error initializing RevenueCat: $e');
         }
-        
+
         // Navigate to home quickly. Provider will populate cached attendance (loaded earlier
         // from main's provider creation) and then attempt network refresh in background.
         navigator.pushReplacementNamed('/home');
@@ -64,11 +68,14 @@ class _SplashScreenState extends State<SplashScreen> {
         // These calls update the provider when data arrives and will notify listeners.
         // We deliberately don't await them to keep startup snappy.
         provider.checkOfflineDataAndLogin();
-        provider.checkAndAutoLogin().then((success) {
-          // No further navigation here; HomeScreen listens to provider changes.
-        }).catchError((_) {
-          // Ignore background errors; HomeScreen will show cached data or error.
-        });
+        provider
+            .checkAndAutoLogin()
+            .then((success) {
+              // No further navigation here; HomeScreen listens to provider changes.
+            })
+            .catchError((_) {
+              // Ignore background errors; HomeScreen will show cached data or error.
+            });
       } else {
         // Not previously logged in — go to login immediately.
         navigator.pushReplacementNamed('/login');
@@ -136,14 +143,11 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 16),
             const Text(
               'Loading...',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
             ),
           ],
         ),
       ),
     );
   }
-  }
+}

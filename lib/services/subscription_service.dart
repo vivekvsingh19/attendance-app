@@ -37,17 +37,23 @@ class SubscriptionService {
   static Future<bool> hasActiveSubscription() async {
     try {
       final customerInfo = await Purchases.getCustomerInfo();
-      
+
       // 🆕 ENHANCED LOGGING - Check ALL possible entitlement names
       debugPrint('🔍 === CHECKING SUBSCRIPTION ===');
       debugPrint('Customer ID: ${customerInfo.originalAppUserId}');
-      debugPrint('All Entitlements: ${customerInfo.entitlements.all.keys.toList()}');
-      debugPrint('Active Entitlements: ${customerInfo.entitlements.active.keys.toList()}');
+      debugPrint(
+        'All Entitlements: ${customerInfo.entitlements.all.keys.toList()}',
+      );
+      debugPrint(
+        'Active Entitlements: ${customerInfo.entitlements.active.keys.toList()}',
+      );
       debugPrint('Looking for: $_entitlementId');
-      
+
       // Try exact match first
-      bool hasEntitlement = customerInfo.entitlements.active.containsKey(_entitlementId);
-      
+      bool hasEntitlement = customerInfo.entitlements.active.containsKey(
+        _entitlementId,
+      );
+
       if (!hasEntitlement) {
         // Try case-insensitive match
         debugPrint('⚠️  Exact match failed, trying case-insensitive...');
@@ -60,12 +66,14 @@ class SubscriptionService {
           }
         }
       }
-      
+
       if (hasEntitlement) {
         debugPrint('✅ SUBSCRIPTION ACTIVE');
       } else {
         debugPrint('❌ SUBSCRIPTION INACTIVE');
-        debugPrint('⚠️  Available entitlements: ${customerInfo.entitlements.active.keys.join(", ")}');
+        debugPrint(
+          '⚠️  Available entitlements: ${customerInfo.entitlements.active.keys.join(", ")}',
+        );
       }
       debugPrint('=============================');
 

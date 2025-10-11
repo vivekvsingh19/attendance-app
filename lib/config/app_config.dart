@@ -43,7 +43,8 @@ class AppConfig {
   // Subscription Settings (RevenueCat)
   static const String revenueCatApiKey = 'goog_QgUfeviGVHAWQOtPJahnJnEgRse';
   static const String revenueCatAppId = 'appfa5337f5b1';
-  static const String subscriptionEntitlementId = 'Upasthit Pro';  // EXACT match from RevenueCat
+  static const String subscriptionEntitlementId =
+      'Upasthit Pro'; // EXACT match from RevenueCat
   static const String subscriptionProductId = 'monthly_pro';
   static const String subscriptionBasePlanId = 'monthly-pro';
 

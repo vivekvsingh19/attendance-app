@@ -146,53 +146,55 @@ class DebugSubscriptionWidget extends StatelessWidget {
 
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Row(
-            children: [
-              Icon(Icons.info, color: Colors.blue),
-              SizedBox(width: 8),
-              Text('Subscription Debug'),
-            ],
-          ),
-          content: SingleChildScrollView(
-            child: SelectableText(
-              debugInfo.toString(),
-              style: TextStyle(fontFamily: 'monospace', fontSize: 12),
+        builder:
+            (context) => AlertDialog(
+              title: Row(
+                children: [
+                  Icon(Icons.info, color: Colors.blue),
+                  SizedBox(width: 8),
+                  Text('Subscription Debug'),
+                ],
+              ),
+              content: SingleChildScrollView(
+                child: SelectableText(
+                  debugInfo.toString(),
+                  style: TextStyle(fontFamily: 'monospace', fontSize: 12),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Close'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Copy to clipboard would go here if needed
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Info printed to console')),
+                    );
+                    Navigator.pop(context);
+                  },
+                  child: Text('View Console'),
+                ),
+              ],
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Close'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Copy to clipboard would go here if needed
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Info printed to console')),
-                );
-                Navigator.pop(context);
-              },
-              child: Text('View Console'),
-            ),
-          ],
-        ),
       );
     } catch (e) {
       Navigator.pop(context); // Close loading dialog
-      
+
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Failed to get subscription info:\n\n$e'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+        builder:
+            (context) => AlertDialog(
+              title: Text('Error'),
+              content: Text('Failed to get subscription info:\n\n$e'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     }
   }
@@ -212,45 +214,47 @@ class DebugSubscriptionWidget extends StatelessWidget {
 
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Row(
-            children: [
-              Icon(
-                subscription.isPremium ? Icons.check_circle : Icons.cancel,
-                color: subscription.isPremium ? Colors.green : Colors.red,
+        builder:
+            (context) => AlertDialog(
+              title: Row(
+                children: [
+                  Icon(
+                    subscription.isPremium ? Icons.check_circle : Icons.cancel,
+                    color: subscription.isPremium ? Colors.green : Colors.red,
+                  ),
+                  SizedBox(width: 8),
+                  Text('Status Refreshed'),
+                ],
               ),
-              SizedBox(width: 8),
-              Text('Status Refreshed'),
-            ],
-          ),
-          content: Text(
-            subscription.isPremium
-                ? '✅ Premium Active${subscription.isInTrialPeriod ? " (Trial)" : ""}'
-                : '❌ No Active Subscription',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+              content: Text(
+                subscription.isPremium
+                    ? '✅ Premium Active${subscription.isInTrialPeriod ? " (Trial)" : ""}'
+                    : '❌ No Active Subscription',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     } catch (e) {
       Navigator.pop(context); // Close loading dialog
 
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Failed to refresh:\n\n$e'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+        builder:
+            (context) => AlertDialog(
+              title: Text('Error'),
+              content: Text('Failed to refresh:\n\n$e'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     }
   }
@@ -270,45 +274,47 @@ class DebugSubscriptionWidget extends StatelessWidget {
 
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Row(
-            children: [
-              Icon(
-                restored ? Icons.check_circle : Icons.info,
-                color: restored ? Colors.green : Colors.orange,
+        builder:
+            (context) => AlertDialog(
+              title: Row(
+                children: [
+                  Icon(
+                    restored ? Icons.check_circle : Icons.info,
+                    color: restored ? Colors.green : Colors.orange,
+                  ),
+                  SizedBox(width: 8),
+                  Text('Restore Purchases'),
+                ],
               ),
-              SizedBox(width: 8),
-              Text('Restore Purchases'),
-            ],
-          ),
-          content: Text(
-            restored
-                ? '✅ Purchases restored successfully!\n\nYou now have premium access.'
-                : 'ℹ️ No purchases found to restore.\n\nIf you just purchased, please wait a moment and try again.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+              content: Text(
+                restored
+                    ? '✅ Purchases restored successfully!\n\nYou now have premium access.'
+                    : 'ℹ️ No purchases found to restore.\n\nIf you just purchased, please wait a moment and try again.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     } catch (e) {
       Navigator.pop(context); // Close loading dialog
 
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Failed to restore:\n\n$e'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+        builder:
+            (context) => AlertDialog(
+              title: Text('Error'),
+              content: Text('Failed to restore:\n\n$e'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     }
   }
