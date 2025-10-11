@@ -51,6 +51,8 @@ dependencies:
   iconsax: ^0.0.8
   share_plus: ^10.0.2
   upgrader: ^10.3.0
+  purchases_flutter: ^8.11.0
+  purchases_ui_flutter: ^8.11.0
 
 dev_dependencies:
   flutter_test:

@@ -1,35 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/attendance_provider.dart';
+import '../providers/subscription_provider.dart';
 import '../utils/colors.dart';
 import '../utils/share_helper.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'paywall_screen.dart';
+import '../widgets/debug_subscription_widget.dart';
 
 class SettingsScreen extends StatelessWidget {
   void _showLogoutDialog(BuildContext context, AttendanceProvider provider) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Logout'),
+            content: const Text('Are you sure you want to logout?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  provider.logout();
+                  Navigator.pushReplacementNamed(context, '/login');
+                },
+                child: const Text('Logout'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            onPressed: () {
-              Navigator.pop(context);
-              provider.logout();
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-            child: const Text('Logout'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -110,6 +116,9 @@ class SettingsScreen extends StatelessWidget {
                     () => ShareHelper.showShareOptions(context, provider),
                   ),
                 ]),
+                const SizedBox(height: 24),
+                // Debug Section (for testing)
+                const DebugSubscriptionWidget(),
                 const SizedBox(height: 16),
                 // Logout Button
                 _buildLogoutButton(context, provider),
@@ -376,33 +385,34 @@ class SettingsScreen extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Set Target Attendance'),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: 'Target Percentage',
-            suffixText: '%',
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Set Target Attendance'),
+            content: TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Target Percentage',
+                suffixText: '%',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final value = int.tryParse(controller.text);
+                  if (value != null && value >= 50 && value <= 99) {
+                    provider.updateAttendanceThreshold(value.toDouble());
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('Save'),
+              ),
+            ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final value = int.tryParse(controller.text);
-              if (value != null && value >= 50 && value <= 99) {
-                provider.updateAttendanceThreshold(value.toDouble());
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -411,26 +421,27 @@ class SettingsScreen extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Update Student ID'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(labelText: 'Student ID'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Update Student ID'),
+            content: TextField(
+              controller: controller,
+              decoration: const InputDecoration(labelText: 'Student ID'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  provider.updateStudentId(controller.text);
+                  Navigator.pop(context);
+                },
+                child: const Text('Save'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              provider.updateStudentId(controller.text);
-              Navigator.pop(context);
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -442,26 +453,27 @@ class SettingsScreen extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Update Student Name'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(labelText: 'Student Name'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Update Student Name'),
+            content: TextField(
+              controller: controller,
+              decoration: const InputDecoration(labelText: 'Student Name'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  provider.updateStudentName(controller.text);
+                  Navigator.pop(context);
+                },
+                child: const Text('Save'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              provider.updateStudentName(controller.text);
-              Navigator.pop(context);
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -472,23 +484,26 @@ class SettingsScreen extends StatelessWidget {
   void _showExportPdfDialog(BuildContext context, AttendanceProvider provider) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Export Attendance'),
-        content: const Text('Export all your attendance data as a PDF file.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Export Attendance'),
+            content: const Text(
+              'Export all your attendance data as a PDF file.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await _exportAttendanceAsPdf(context, provider);
+                },
+                child: const Text('Export'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              await _exportAttendanceAsPdf(context, provider);
-            },
-            child: const Text('Export'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -496,12 +511,68 @@ class SettingsScreen extends StatelessWidget {
     BuildContext context,
     AttendanceProvider provider,
   ) async {
+    // Premium check for PDF generation
+    final subscription = context.read<SubscriptionProvider>();
+    if (!subscription.isPremium) {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Row(
+                children: [
+                  Icon(Icons.star, color: Color(0xFF2E7D32)),
+                  SizedBox(width: 8),
+                  Text('Premium Feature'),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'PDF Report generation is a premium feature.',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Upgrade to Upasthit Pro to unlock PDF reports and other advanced features.',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Maybe Later'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    showPaywallModal(context);
+                  },
+                  icon: Icon(Icons.star, size: 18),
+                  label: Text('Upgrade Now'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF2E7D32),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+      );
+      return;
+    }
+
     final pdf = pw.Document();
 
     final studentName = provider.studentName ?? 'Student';
-    final studentId = provider.settings.studentId.isNotEmpty
-        ? provider.settings.studentId
-        : 'Not Set';
+    final studentId =
+        provider.settings.studentId.isNotEmpty
+            ? provider.settings.studentId
+            : 'Not Set';
     final overallAttendance = provider.overallAttendancePercentage
         .toStringAsFixed(1);
 
@@ -576,9 +647,10 @@ class SettingsScreen extends StatelessWidget {
           if (provider.attendanceList.isNotEmpty) {
             tableRows.addAll(
               provider.attendanceList.map((detail) {
-                final percent = detail.total > 0
-                    ? (detail.attended / detail.total * 100)
-                    : 0.0;
+                final percent =
+                    detail.total > 0
+                        ? (detail.attended / detail.total * 100)
+                        : 0.0;
                 String classification;
                 PdfColor rowColor;
                 if (percent >= provider.settings.attendanceThreshold) {

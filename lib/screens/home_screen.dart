@@ -4,11 +4,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
 import '../providers/attendance_provider.dart';
 import '../providers/announcement_provider.dart';
+import '../providers/subscription_provider.dart';
 import '../widgets/subject_card.dart';
+import '../widgets/premium_feature_guard.dart';
 import '../utils/colors.dart';
 import '../utils/share_helper.dart';
 import '../models/subject.dart';
 import 'gpa_calculator_screen.dart';
+import 'calculator_screen.dart';
+import 'paywall_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,7 +48,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   // decoration: BoxDecoration(
                   //  borderRadius: BorderRadius.circular(12),
                   // ),
-                  Image.asset('assets/images/75+.png', width: 34, height: 34),
+                  Consumer<SubscriptionProvider>(
+                    builder: (context, subscription, _) {
+                      return Image.asset(
+                        subscription.isPremium
+                            ? 'assets/images/golden.png'
+                            : 'assets/images/75+.png',
+                        width: 34,
+                        height: 34,
+                      );
+                    },
+                  ),
                   //),
                   const SizedBox(width: 12),
                   Expanded(
@@ -568,22 +582,31 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildStatCard(
-                  title: 'Critical Subjects',
-                  value: '$criticalSubjects',
-                  color: const Color(0xFFEF4444),
-                  icon: Icons.warning_rounded,
-                  onTap: () => _showCriticalSubjects(context, provider),
+                child: Consumer<SubscriptionProvider>(
+                  builder: (context, subscription, _) {
+                    return _buildStatCard(
+                      title: 'Critical Subjects',
+                      value:
+                          subscription.isPremium ? '$criticalSubjects' : '🔒',
+                      color: const Color(0xFFEF4444),
+                      icon: Icons.warning_rounded,
+                      onTap: () => _showCriticalSubjects(context, provider),
+                    );
+                  },
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildStatCard(
-                  title: 'Safe Bunks',
-                  value: '$safeBunks',
-                  color: const Color(0xFF10B981),
-                  icon: Icons.free_breakfast_rounded,
-                  onTap: () => _showSafeBunksInfo(context, provider),
+                child: Consumer<SubscriptionProvider>(
+                  builder: (context, subscription, _) {
+                    return _buildStatCard(
+                      title: 'Safe Bunks',
+                      value: subscription.isPremium ? '$safeBunks' : '🔒',
+                      color: const Color(0xFF10B981),
+                      icon: Icons.free_breakfast_rounded,
+                      onTap: () => _showSafeBunksInfo(context, provider),
+                    );
+                  },
                 ),
               ),
             ],
@@ -655,404 +678,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showCalculator(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _buildCalculatorModal(context),
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CalculatorScreen()),
     );
   }
 
-  Widget _buildCalculatorModal(BuildContext context) {
-    String display = '0';
-    String expression = '';
-    String operation = '';
-    double firstNumber = 0;
-    double secondNumber = 0;
-    bool isOperationPressed = false;
-    bool showResult = false;
-
-    return StatefulBuilder(
-      builder: (context, setState) {
-        String formatNumber(double number) {
-          if (number == number.roundToDouble()) {
-            return number.toInt().toString();
-          }
-          return number.toString();
-        }
-
-        void onButtonPressed(String buttonText) {
-          setState(() {
-            if (buttonText == 'C') {
-              display = '0';
-              expression = '';
-              operation = '';
-              firstNumber = 0;
-              secondNumber = 0;
-              isOperationPressed = false;
-              showResult = false;
-            } else if (buttonText == '+' ||
-                buttonText == '-' ||
-                buttonText == '×' ||
-                buttonText == '÷') {
-              if (operation.isNotEmpty && !isOperationPressed) {
-                // Complete pending operation first
-                secondNumber = double.parse(display);
-                switch (operation) {
-                  case '+':
-                    firstNumber = firstNumber + secondNumber;
-                    break;
-                  case '-':
-                    firstNumber = firstNumber - secondNumber;
-                    break;
-                  case '×':
-                    firstNumber = firstNumber * secondNumber;
-                    break;
-                  case '÷':
-                    firstNumber =
-                        secondNumber != 0 ? firstNumber / secondNumber : 0;
-                    break;
-                }
-                display = formatNumber(firstNumber);
-                expression = '${formatNumber(firstNumber)} $buttonText ';
-              } else {
-                firstNumber = double.parse(display);
-                expression = '${formatNumber(firstNumber)} $buttonText ';
-              }
-              operation = buttonText;
-              isOperationPressed = true;
-              showResult = false;
-            } else if (buttonText == '=') {
-              if (operation.isNotEmpty && !showResult) {
-                secondNumber = double.parse(display);
-                double result;
-                switch (operation) {
-                  case '+':
-                    result = firstNumber + secondNumber;
-                    break;
-                  case '-':
-                    result = firstNumber - secondNumber;
-                    break;
-                  case '×':
-                    result = firstNumber * secondNumber;
-                    break;
-                  case '÷':
-                    result = secondNumber != 0 ? firstNumber / secondNumber : 0;
-                    break;
-                  default:
-                    result = 0;
-                }
-
-                if (result.isInfinite || result.isNaN) {
-                  display = 'Error';
-                  expression = '';
-                } else {
-                  display = formatNumber(result);
-                  expression =
-                      '${formatNumber(firstNumber)} $operation ${formatNumber(secondNumber)} =';
-                }
-
-                operation = '';
-                firstNumber = result.isInfinite || result.isNaN ? 0 : result;
-                isOperationPressed = false;
-                showResult = true;
-              }
-            } else if (buttonText == '.') {
-              if (!display.contains('.')) {
-                if (isOperationPressed || display == '0' || showResult) {
-                  display = '0.';
-                  isOperationPressed = false;
-                  showResult = false;
-                } else {
-                  display += '.';
-                }
-              }
-            } else if (buttonText == '⌫') {
-              // Backspace functionality
-              if (display.length > 1 && display != '0') {
-                display = display.substring(0, display.length - 1);
-              } else {
-                display = '0';
-              }
-              showResult = false;
-            } else {
-              // Number button pressed
-              if (isOperationPressed || display == '0' || showResult) {
-                display = buttonText;
-                isOperationPressed = false;
-                showResult = false;
-              } else {
-                display += buttonText;
-              }
-            }
-          });
-        }
-
-        Widget buildButton(String text, {Color? color, Color? textColor}) {
-          return Expanded(
-            child: Container(
-              height: 60,
-              margin: const EdgeInsets.all(4),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: color ?? Colors.grey.shade100,
-                  foregroundColor: textColor ?? Colors.black87,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                onPressed: () => onButtonPressed(text),
-                child: Text(
-                  text,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }
-
-        return DraggableScrollableSheet(
-          initialChildSize: 0.7,
-          minChildSize: 0.5,
-          maxChildSize: 0.8,
-          builder: (context, scrollController) {
-            return Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              child: Column(
-                children: [
-                  // Header
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        // Handle bar
-                        Container(
-                          width: 40,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF9F7AEA).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.calculate_outlined,
-                                color: Color(0xFF9F7AEA),
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Expanded(
-                              child: Text(
-                                'Calculator',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFF1E293B),
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () => Navigator.pop(context),
-                              icon: const Icon(Icons.close_rounded),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Calculator display
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        // Expression history (small text)
-                        if (expression.isNotEmpty)
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Text(
-                              expression,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              textAlign: TextAlign.right,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        // Main display (large text)
-                        Text(
-                          display,
-                          style: const TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF1E293B),
-                          ),
-                          textAlign: TextAlign.right,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Calculator buttons
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        children: [
-                          // Row 1: C, ⌫, ÷, ×
-                          Row(
-                            children: [
-                              buildButton(
-                                'C',
-                                color: Colors.red.shade100,
-                                textColor: Colors.red.shade700,
-                              ),
-                              buildButton(
-                                '⌫',
-                                color: Colors.orange.shade100,
-                                textColor: Colors.orange.shade700,
-                              ),
-                              buildButton(
-                                '÷',
-                                color: const Color(0xFF9F7AEA).withOpacity(0.1),
-                                textColor: const Color(0xFF9F7AEA),
-                              ),
-                              buildButton(
-                                '×',
-                                color: const Color(0xFF9F7AEA).withOpacity(0.1),
-                                textColor: const Color(0xFF9F7AEA),
-                              ),
-                            ],
-                          ),
-                          // Row 2: 7, 8, 9, -
-                          Row(
-                            children: [
-                              buildButton('7'),
-                              buildButton('8'),
-                              buildButton('9'),
-                              buildButton(
-                                '-',
-                                color: const Color(0xFF9F7AEA).withOpacity(0.1),
-                                textColor: const Color(0xFF9F7AEA),
-                              ),
-                            ],
-                          ),
-                          // Row 3: 4, 5, 6, +
-                          Row(
-                            children: [
-                              buildButton('4'),
-                              buildButton('5'),
-                              buildButton('6'),
-                              buildButton(
-                                '+',
-                                color: const Color(0xFF9F7AEA).withOpacity(0.1),
-                                textColor: const Color(0xFF9F7AEA),
-                              ),
-                            ],
-                          ),
-                          // Row 4: 1, 2, 3, =
-                          Row(
-                            children: [
-                              buildButton('1'),
-                              buildButton('2'),
-                              buildButton('3'),
-                              Expanded(
-                                child: Container(
-                                  height: 60,
-                                  margin: const EdgeInsets.all(4),
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF9F7AEA),
-                                      foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      elevation: 0,
-                                    ),
-                                    onPressed: () => onButtonPressed('='),
-                                    child: const Text(
-                                      '=',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          // Row 5: 0 (wide), ., (empty)
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: Container(
-                                  height: 60,
-                                  margin: const EdgeInsets.all(4),
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.grey.shade100,
-                                      foregroundColor: Colors.black87,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      elevation: 0,
-                                    ),
-                                    onPressed: () => onButtonPressed('0'),
-                                    child: const Text(
-                                      '0',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              buildButton('.'),
-                              const Expanded(child: SizedBox()),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
+  // Calculator modal removed. Now using CalculatorScreen.
 
   String _formatTimeAgo(DateTime dateTime) {
     final now = DateTime.now();
@@ -1319,6 +951,13 @@ class _HomeScreenState extends State<HomeScreen> {
     BuildContext context,
     AttendanceProvider provider,
   ) {
+    // Premium check
+    final subscription = context.read<SubscriptionProvider>();
+    if (!subscription.isPremium) {
+      showPaywallModal(context);
+      return;
+    }
+
     final threshold = provider.settings.attendanceThreshold;
     final criticalSubjects =
         provider.subjects
@@ -1352,6 +991,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showSafeBunksInfo(BuildContext context, AttendanceProvider provider) {
+    // Premium check
+    final subscription = context.read<SubscriptionProvider>();
+    if (!subscription.isPremium) {
+      showPaywallModal(context);
+      return;
+    }
+
     final threshold = provider.settings.attendanceThreshold;
     final safeBunkSubjects =
         provider.subjects
@@ -1464,15 +1110,54 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               // Subjects list
               Expanded(
-                child: ListView.builder(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: subjects.length,
-                  itemBuilder: (context, index) {
-                    final subject = subjects[index];
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: SubjectCard(subject: subject),
+                child: Consumer<SubscriptionProvider>(
+                  builder: (context, subscription, _) {
+                    // Calculate how many items to show
+                    int itemCount = subjects.length;
+                    if (!subscription.isPremium && subjects.length > 2) {
+                      // Free users: show 2 subjects + 1 locked card = 3 items
+                      itemCount = 3;
+                    }
+
+                    return ListView.builder(
+                      controller: scrollController,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: itemCount,
+                      itemBuilder: (context, index) {
+                        final subject =
+                            subjects.length > index ? subjects[index] : null;
+
+                        // Show first 2 cards for free
+                        if (index < 2 && subject != null) {
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: SubjectCard(subject: subject),
+                          );
+                        }
+
+                        // Show locked card at position 2 for free users
+                        if (index == 2 && !subscription.isPremium) {
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: PremiumFeatureGuard(
+                              featureName: 'All Subject Details',
+                              featureDescription:
+                                  'Unlock detailed view for all ${subjects.length} subjects',
+                              child: SizedBox(),
+                            ),
+                          );
+                        }
+
+                        // Premium users see all cards
+                        if (subject != null) {
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: SubjectCard(subject: subject),
+                          );
+                        }
+
+                        return SizedBox.shrink();
+                      },
                     );
                   },
                 ),
