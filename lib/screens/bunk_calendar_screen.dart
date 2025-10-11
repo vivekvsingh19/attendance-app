@@ -88,23 +88,8 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Subjects to bunk: ${selectedSubjects.keys.join(', ')}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
+                          // ... no secondary header text (date/subjects) as requested
                         ],
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: Icon(
-                        Icons.close,
-                        color: AppColors.textSecondary,
-                        size: 20,
                       ),
                     ),
                   ],
@@ -132,9 +117,8 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
 
                     if (isAffected) {
                       final newTotal = totalClasses + periodsToAdd;
-                      predictedAttendance = newTotal > 0
-                          ? (attendedClasses / newTotal) * 100
-                          : 0;
+                      predictedAttendance =
+                          newTotal > 0 ? (attendedClasses / newTotal) * 100 : 0;
                       final change = predictedAttendance - currentAttendance;
                       changeText = '${change.toStringAsFixed(1)}%';
                     } else {
@@ -146,14 +130,16 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                       margin: EdgeInsets.only(bottom: 12),
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isAffected
-                            ? Colors.red.shade50
-                            : Colors.grey.shade50,
+                        color:
+                            isAffected
+                                ? Colors.red.shade50
+                                : Colors.grey.shade50,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: isAffected
-                              ? Colors.red.shade300
-                              : Colors.grey.shade300,
+                          color:
+                              isAffected
+                                  ? Colors.red.shade300
+                                  : Colors.grey.shade300,
                           width: 1,
                         ),
                       ),
@@ -183,9 +169,10 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                                 'After: ${predictedAttendance.toStringAsFixed(1)}%',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: isAffected
-                                      ? Colors.red[700]
-                                      : AppColors.textSecondary,
+                                  color:
+                                      isAffected
+                                          ? Colors.red[700]
+                                          : AppColors.textSecondary,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -210,13 +197,16 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
               ),
 
               // Bottom close button
-              Container(
+              Padding(
                 padding: EdgeInsets.all(20),
                 child: SafeArea(
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed:
+                          () => Navigator.of(context).popUntil(
+                            (route) => route is! ModalBottomSheetRoute,
+                          ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.success,
                         foregroundColor: Colors.white,
@@ -309,8 +299,8 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                           ),
                         ),
                         IconButton(
-                          onPressed: () =>
-                              Navigator.pop(context, <String, int>{}),
+                          onPressed:
+                              () => Navigator.pop(context, <String, int>{}),
                           icon: Icon(
                             Icons.close,
                             color: AppColors.textSecondary,
@@ -360,9 +350,9 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                           'lab',
                         );
                         final hasPracticalSuffix = subject.name.contains('-P');
-                        final suggestedPeriods = (isLab || hasPracticalSuffix)
-                            ? 2
-                            : 1;
+                        final suggestedPeriods =
+                            (isLab || hasPracticalSuffix) ? 2 : 1;
+                        final step = hasPracticalSuffix ? 2 : 1;
 
                         return Container(
                           margin: EdgeInsets.only(bottom: 8),
@@ -384,9 +374,10 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                                 padding: EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   border: Border.all(
-                                    color: isSelected
-                                        ? AppColors.success
-                                        : Colors.grey.shade300,
+                                    color:
+                                        isSelected
+                                            ? AppColors.success
+                                            : Colors.grey.shade300,
                                     width: isSelected ? 1.5 : 1,
                                   ),
                                   borderRadius: BorderRadius.circular(12),
@@ -397,24 +388,27 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                                       width: 20,
                                       height: 20,
                                       decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? AppColors.success
-                                            : Colors.transparent,
+                                        color:
+                                            isSelected
+                                                ? AppColors.success
+                                                : Colors.transparent,
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                          color: isSelected
-                                              ? AppColors.success
-                                              : Colors.grey.shade400,
+                                          color:
+                                              isSelected
+                                                  ? AppColors.success
+                                                  : Colors.grey.shade400,
                                           width: 2,
                                         ),
                                       ),
-                                      child: isSelected
-                                          ? Icon(
-                                              Icons.check,
-                                              color: Colors.white,
-                                              size: 12,
-                                            )
-                                          : null,
+                                      child:
+                                          isSelected
+                                              ? Icon(
+                                                Icons.check,
+                                                color: Colors.white,
+                                                size: 12,
+                                              )
+                                              : null,
                                     ),
                                     SizedBox(width: 12),
                                     Expanded(
@@ -444,34 +438,90 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                                       ),
                                     ),
                                     if (isSelected) ...[
-                                      GestureDetector(
-                                        onTap: () =>
-                                            _showPeriodSelectionBottomSheet(
-                                              context,
-                                              subject.name,
-                                              periods,
-                                              setDialogState,
-                                              selectedSubjects,
+                                      Container(
+                                        margin: EdgeInsets.only(left: 8),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                setDialogState(() {
+                                                  final current =
+                                                      selectedSubjects[subject
+                                                          .name] ??
+                                                      1;
+                                                  final newVal =
+                                                      (current - step) >= 1
+                                                          ? current - step
+                                                          : 1;
+                                                  selectedSubjects[subject
+                                                          .name] =
+                                                      newVal;
+                                                });
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.all(6),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey.shade100,
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                ),
+                                                child: Icon(
+                                                  Icons.remove,
+                                                  size: 16,
+                                                  color: AppColors.textPrimary,
+                                                ),
+                                              ),
                                             ),
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade100,
-                                            borderRadius: BorderRadius.circular(
-                                              6,
+                                            SizedBox(width: 8),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 10,
+                                                vertical: 6,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey.shade100,
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                              child: Text(
+                                                '$periods',
+                                                style: TextStyle(
+                                                  color: AppColors.textPrimary,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                          child: Text(
-                                            '$periods',
-                                            style: TextStyle(
-                                              color: AppColors.textPrimary,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 12,
+                                            SizedBox(width: 8),
+                                            GestureDetector(
+                                              onTap: () {
+                                                setDialogState(() {
+                                                  final current =
+                                                      selectedSubjects[subject
+                                                          .name] ??
+                                                      1;
+                                                  final newVal = current + step;
+                                                  selectedSubjects[subject
+                                                          .name] =
+                                                      newVal;
+                                                });
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.all(6),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey.shade100,
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                ),
+                                                child: Icon(
+                                                  Icons.add,
+                                                  size: 16,
+                                                  color: AppColors.textPrimary,
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ),
                                       ),
                                     ],
@@ -492,9 +542,11 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: selectedSubjects.isNotEmpty
-                              ? () => Navigator.pop(context, selectedSubjects)
-                              : null,
+                          onPressed:
+                              selectedSubjects.isNotEmpty
+                                  ? () =>
+                                      Navigator.pop(context, selectedSubjects)
+                                  : null,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.success,
                             foregroundColor: Colors.white,
@@ -597,14 +649,16 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                         child: Container(
                           padding: EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            color: currentPeriods == 1
-                                ? AppColors.success
-                                : Colors.white,
+                            color:
+                                currentPeriods == 1
+                                    ? AppColors.success
+                                    : Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: currentPeriods == 1
-                                  ? AppColors.success
-                                  : Colors.grey.shade300,
+                              color:
+                                  currentPeriods == 1
+                                      ? AppColors.success
+                                      : Colors.grey.shade300,
                               width: 1,
                             ),
                           ),
@@ -615,9 +669,10 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w600,
-                                  color: currentPeriods == 1
-                                      ? Colors.white
-                                      : AppColors.textPrimary,
+                                  color:
+                                      currentPeriods == 1
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
                                 ),
                               ),
                               SizedBox(height: 4),
@@ -625,9 +680,10 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                                 'Single Period',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: currentPeriods == 1
-                                      ? Colors.white.withOpacity(0.9)
-                                      : AppColors.textSecondary,
+                                  color:
+                                      currentPeriods == 1
+                                          ? Colors.white.withOpacity(0.9)
+                                          : AppColors.textSecondary,
                                 ),
                               ),
                             ],
@@ -647,14 +703,16 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                         child: Container(
                           padding: EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            color: currentPeriods == 2
-                                ? AppColors.success
-                                : Colors.white,
+                            color:
+                                currentPeriods == 2
+                                    ? AppColors.success
+                                    : Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: currentPeriods == 2
-                                  ? AppColors.success
-                                  : Colors.grey.shade300,
+                              color:
+                                  currentPeriods == 2
+                                      ? AppColors.success
+                                      : Colors.grey.shade300,
                               width: 1,
                             ),
                           ),
@@ -665,9 +723,10 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w600,
-                                  color: currentPeriods == 2
-                                      ? Colors.white
-                                      : AppColors.textPrimary,
+                                  color:
+                                      currentPeriods == 2
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
                                 ),
                               ),
                               SizedBox(height: 4),
@@ -675,9 +734,10 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                                 'Double Period',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: currentPeriods == 2
-                                      ? Colors.white.withOpacity(0.9)
-                                      : AppColors.textSecondary,
+                                  color:
+                                      currentPeriods == 2
+                                          ? Colors.white.withOpacity(0.9)
+                                          : AppColors.textSecondary,
                                 ),
                               ),
                             ],
@@ -746,7 +806,51 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
                 formatButtonVisible: false,
                 titleCentered: true,
               ),
+              // Allow tapping to select/deselect multiple days. Long-press to
+              // open the bunk prediction dialog for a specific day.
+              selectedDayPredicate:
+                  (day) => _bunkDates.any((d) => _isSameDay(d, day)),
               onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  _focusedDay = focusedDay;
+
+                  // Prevent selecting past dates
+                  final today = DateTime.now();
+                  final yesterday = DateTime(
+                    today.year,
+                    today.month,
+                    today.day,
+                  ).subtract(Duration(days: 1));
+
+                  if (selectedDay.isBefore(yesterday)) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Cannot select past dates')),
+                    );
+                    return;
+                  }
+
+                  // Toggle selection
+                  final exists = _bunkDates.any(
+                    (d) => _isSameDay(d, selectedDay),
+                  );
+                  if (exists) {
+                    _bunkDates.removeWhere((d) => _isSameDay(d, selectedDay));
+                  } else {
+                    if (_isAcademicHoliday(selectedDay)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('This is an academic holiday!'),
+                          backgroundColor: Colors.orange,
+                        ),
+                      );
+                    } else {
+                      _bunkDates.add(selectedDay);
+                    }
+                  }
+                });
+              },
+
+              onDayLongPressed: (selectedDay, focusedDay) {
                 setState(() {
                   _focusedDay = focusedDay;
                 });
@@ -854,6 +958,309 @@ class _BunkCalendarScreenState extends State<BunkCalendarScreen> {
           );
         },
       ),
+      // Show a Next arrow when user has selected one or more bunk dates
+      floatingActionButton:
+          _bunkDates.isNotEmpty
+              ? FloatingActionButton.extended(
+                onPressed: () async {
+                  final attendanceProvider = Provider.of<AttendanceProvider>(
+                    context,
+                    listen: false,
+                  );
+                  final subjects = attendanceProvider.subjects;
+
+                  // Let user select subjects once to apply to all selected dates
+                  final selectedSubjects = await _showTimetableSelectionDialog(
+                    _bunkDates.first,
+                    subjects,
+                  );
+
+                  if (selectedSubjects.isEmpty) return;
+
+                  // Show prediction for all selected dates in a single modal
+                  final dates =
+                      List<DateTime>.from(_bunkDates)
+                        ..sort((a, b) => a.compareTo(b))
+                        ..removeWhere(
+                          (d) =>
+                              _isAcademicHoliday(d) ||
+                              d.isBefore(
+                                DateTime.now().subtract(Duration(days: 1)),
+                              ),
+                        );
+
+                  if (dates.isEmpty) return;
+
+                  // Close any existing bottom sheets just in case to avoid stacking
+                  Navigator.of(
+                    context,
+                  ).popUntil((route) => route is! ModalBottomSheetRoute);
+
+                  await _showCombinedBunkPredictions(
+                    dates,
+                    subjects,
+                    selectedSubjects,
+                  );
+                },
+                icon: Icon(Icons.arrow_forward),
+                label: Text('${_bunkDates.length} Next'),
+              )
+              : null,
+    );
+  }
+
+  // Show one combined modal with pages for each selected date to avoid stacking
+  Future<void> _showCombinedBunkPredictions(
+    List<DateTime> dates,
+    List subjects,
+    Map<String, int> selectedSubjects,
+  ) async {
+    final pageController = PageController();
+    int currentPage = 0;
+
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.85,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Handle bar
+                  Container(
+                    margin: EdgeInsets.only(top: 8),
+                    width: 32,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade400,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+
+                  // Header
+                  Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Bunk Impact Analysis',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                        if (dates.length > 1)
+                          Text('${currentPage + 1}/${dates.length}'),
+                        SizedBox(width: 12),
+                        IconButton(
+                          onPressed:
+                              () => Navigator.of(context).popUntil(
+                                (route) => route is! ModalBottomSheetRoute,
+                              ),
+                          icon: Icon(
+                            Icons.close,
+                            color: AppColors.textSecondary,
+                            size: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Pages
+                  Expanded(
+                    child: PageView.builder(
+                      controller: pageController,
+                      itemCount: dates.length,
+                      onPageChanged: (i) => setState(() => currentPage = i),
+                      itemBuilder: (context, pageIndex) {
+                        final selectedDate = dates[pageIndex];
+                        return Column(
+                          children: [
+                            // date chip
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 8,
+                              ),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  '${selectedDate.day}-${selectedDate.month}-${selectedDate.year}',
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // subject list for this date
+                            Expanded(
+                              child: ListView.builder(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 8,
+                                ),
+                                itemCount: subjects.length,
+                                itemBuilder: (context, index) {
+                                  final subject = subjects[index];
+                                  final isAffected = selectedSubjects
+                                      .containsKey(subject.name);
+                                  final periodsToAdd =
+                                      selectedSubjects[subject.name] ?? 1;
+
+                                  final currentAttendance =
+                                      subject.attendancePercentage;
+                                  final totalClasses = subject.totalClasses;
+                                  final attendedClasses =
+                                      subject.attendedClasses;
+
+                                  double predictedAttendance;
+                                  String changeText;
+
+                                  if (isAffected) {
+                                    final newTotal =
+                                        totalClasses + periodsToAdd;
+                                    predictedAttendance =
+                                        newTotal > 0
+                                            ? (attendedClasses / newTotal) * 100
+                                            : 0;
+                                    final change =
+                                        predictedAttendance - currentAttendance;
+                                    changeText =
+                                        '${change.toStringAsFixed(1)}%';
+                                  } else {
+                                    predictedAttendance = currentAttendance;
+                                    changeText = 'No change';
+                                  }
+
+                                  return Container(
+                                    margin: EdgeInsets.only(bottom: 12),
+                                    padding: EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          isAffected
+                                              ? Colors.red.shade50
+                                              : Colors.grey.shade50,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color:
+                                            isAffected
+                                                ? Colors.red.shade300
+                                                : Colors.grey.shade300,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          subject.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            color: AppColors.textPrimary,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Current: ${currentAttendance.toStringAsFixed(1)}%',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: AppColors.textSecondary,
+                                              ),
+                                            ),
+                                            Text(
+                                              'After: ${predictedAttendance.toStringAsFixed(1)}%',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color:
+                                                    isAffected
+                                                        ? Colors.red[700]
+                                                        : AppColors
+                                                            .textSecondary,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        if (isAffected) ...[
+                                          SizedBox(height: 4),
+                                          Text(
+                                            'Change: $changeText',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.red[700],
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+
+                  // Bottom close
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: SafeArea(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed:
+                              () => Navigator.of(context).popUntil(
+                                (route) => route is! ModalBottomSheetRoute,
+                              ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.success,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            'Close',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

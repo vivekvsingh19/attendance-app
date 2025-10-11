@@ -1548,7 +1548,7 @@ class _PaywallModalState extends State<PaywallModal>
       debugPrint('Trial Period: ${product.introductoryPrice?.period}');
       debugPrint('Trial Cycles: ${product.introductoryPrice?.cycles}');
     }
-    debugPrint('=================================');
+    debugPrint('================================');
 
     return Column(
       children: [

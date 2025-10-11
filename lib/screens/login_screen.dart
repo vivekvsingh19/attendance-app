@@ -84,18 +84,7 @@ class _LoginScreenState extends State<LoginScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF667eea),
-              Color.fromARGB(255, 9, 65, 252),
-              Color(0xFF667eea),
-            ],
-            stops: [0.0, 0.5, 1.0],
-          ),
-        ),
+        decoration: const BoxDecoration(),
         child: SafeArea(
           child: FadeTransition(
             opacity: _fadeAnimation,
@@ -237,11 +226,8 @@ class _LoginScreenState extends State<LoginScreen>
             prefixIcon: Container(
               margin: const EdgeInsets.all(12),
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF667eea).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: const Color(0xFF667eea), size: 24),
+
+              child: Icon(icon, color: Colors.blue, size: 24),
             ),
             suffixIcon:
                 isPassword
@@ -274,7 +260,7 @@ class _LoginScreenState extends State<LoginScreen>
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Color(0xFF667eea), width: 2),
+              borderSide: const BorderSide(color: Colors.blue, width: 2),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
@@ -314,18 +300,8 @@ class _LoginScreenState extends State<LoginScreen>
           height: 56,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            gradient: const LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF667eea).withOpacity(0.4),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
-              ),
-            ],
+
+            color: Colors.blue,
           ),
           child: ElevatedButton(
             onPressed: provider.isLoading ? null : _login,
